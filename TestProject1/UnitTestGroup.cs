@@ -1,28 +1,22 @@
 using System;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
-using Bogus;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Firefox;
-using OpenQA.Selenium.Support.UI;
 
 namespace TestProject1
 {
     [TestFixture]
     public class TestCase1
     {
-        private IWebDriver driver;
-        private StringBuilder verificationErrors;
-        private string baseURL;
+        private IWebDriver? driver;
+        private StringBuilder? verificationErrors;
         private bool acceptNextAlert = true;
 
         [SetUp]
         public void SetupTest()
         {
             driver = new FirefoxDriver();
-            baseURL = "https://www.google.com/";
             verificationErrors = new StringBuilder();
         }
 
@@ -45,7 +39,7 @@ namespace TestProject1
         {
             var methods = new Methods(driver);
             methods.NavigateHomePage();
-            methods.Auth("admin", "secret");
+            methods.Auth(Auth.Admin);
             methods.AddGroup(Group.GetRandom());
             methods.Logout();
         }
