@@ -1,16 +1,17 @@
-﻿using System;
+using System;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using Bogus;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.Support.UI;
 
-namespace SeleniumTests
+namespace TestProject1
 {
     [TestFixture]
-    public class TestCase2
+    public class TestCase1
     {
         private IWebDriver driver;
         private StringBuilder verificationErrors;
@@ -42,29 +43,11 @@ namespace SeleniumTests
         [Test]
         public void TestCaseTest()
         {
-            driver.Navigate().GoToUrl("http://localhost/addressbook/");
-            driver.FindElement(By.Name("user")).Click();
-            driver.FindElement(By.Name("user")).Clear();
-            driver.FindElement(By.Name("user")).SendKeys("admin");
-            driver.FindElement(By.Name("pass")).Clear();
-            driver.FindElement(By.Name("pass")).SendKeys("secret");
-            driver.FindElement(By.XPath("//input[@value='Login']")).Click();
-            driver.FindElement(By.LinkText("add new")).Click();
-            driver.FindElement(By.LinkText("groups")).Click();
-            driver.FindElement(By.Name("new")).Click();
-            driver.FindElement(By.Name("group_name")).Click();
-            driver.FindElement(By.Name("group_name")).Clear();
-            driver.FindElement(By.Name("group_name")).SendKeys("new_group2");
-            driver.FindElement(By.Name("group_header")).Click();
-            driver.FindElement(By.Name("group_header")).Click();
-            driver.FindElement(By.Name("group_header")).Clear();
-            driver.FindElement(By.Name("group_header")).SendKeys("fdsfdsfsf");
-            driver.FindElement(By.Name("group_footer")).Click();
-            driver.FindElement(By.Name("group_footer")).Clear();
-            driver.FindElement(By.Name("group_footer")).SendKeys("hgdfgdgfdg");
-            driver.FindElement(By.Name("submit")).Click();
-            driver.FindElement(By.LinkText("groups")).Click();
-            driver.FindElement(By.LinkText("Logout")).Click();
+            var methods = new Methods(driver);
+            methods.NavigateHomePage();
+            methods.Auth("admin", "secret");
+            methods.AddGroup(Group.GetRandom());
+            methods.Logout();
         }
         private bool IsElementPresent(By by)
         {
