@@ -17,12 +17,13 @@ namespace TestProject1
             this.driver = driver;
         }
 
-        public void NavigateHomePage()
+        public Methods NavigateHomePage()
         {
             driver.Navigate().GoToUrl("http://localhost/addressbook/");
+            return this;
         }
 
-        public void Auth(Auth auth)
+        public Methods Auth(Auth auth)
         {
             driver.FindElement(By.Name("user")).Click();
             driver.FindElement(By.Name("user")).Clear();
@@ -30,9 +31,10 @@ namespace TestProject1
             driver.FindElement(By.Name("pass")).Clear();
             driver.FindElement(By.Name("pass")).SendKeys(auth.Password);
             driver.FindElement(By.XPath("//input[@value='Login']")).Click();
+            return this;
         }
 
-        public void AddGroup(Group group)
+        public Methods AddGroup(Group group)
         {
             driver.FindElement(By.LinkText("groups")).Click();
             driver.FindElement(By.Name("new")).Click();
@@ -47,9 +49,10 @@ namespace TestProject1
             driver.FindElement(By.Name("group_footer")).Clear();
             driver.FindElement(By.Name("group_footer")).SendKeys(group.Footer);
             driver.FindElement(By.Name("submit")).Click();
+            return this;
         }
 
-        public void AddContact(Contact contact)
+        public Methods AddContact(Contact contact)
         {
             driver.FindElement(By.LinkText("add new")).Click();
             driver.FindElement(By.Name("firstname")).Click();
@@ -129,11 +132,13 @@ namespace TestProject1
             driver.FindElement(By.Name("notes")).Clear();
             driver.FindElement(By.Name("notes")).SendKeys(contact.Notes);
             driver.FindElement(By.XPath("//div[@id='content']/form/input[21]")).Click();
+            return this;
         }
 
-        public void Logout()
+        public Methods Logout()
         {
             driver.FindElement(By.LinkText("Logout")).Click();
+            return this;
         }
     }
 }

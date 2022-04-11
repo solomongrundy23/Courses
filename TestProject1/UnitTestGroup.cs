@@ -2,12 +2,14 @@ using System;
 using System.Text;
 using NUnit.Framework;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Firefox;
 
 namespace TestProject1
 {
-    [TestFixture]
-    public class TestCase1
+    [TestFixture(typeof(FirefoxDriver))]
+    [TestFixture(typeof(ChromeDriver))]
+    public class UnitTestGroup<TypedWebDriver> where TypedWebDriver : IWebDriver, new()
     {
         private IWebDriver? driver;
         private StringBuilder? verificationErrors;
@@ -16,7 +18,8 @@ namespace TestProject1
         [SetUp]
         public void SetupTest()
         {
-            driver = new FirefoxDriver();
+            driver = new TypedWebDriver();
+            driver.Manage().Window.Maximize();
             verificationErrors = new StringBuilder();
         }
 
@@ -34,16 +37,20 @@ namespace TestProject1
             Assert.AreEqual("", verificationErrors.ToString());
         }
 
-        [Test]
-        public void TestCaseTest()
+        public void AddGroup()
         {
             var methods = new Methods(driver);
-            methods.NavigateHomePage();
-            methods.Auth(Auth.Admin);
-            methods.AddGroup(Group.GetRandom());
-            methods.Logout();
+            methods.NavigateHomePage().Auth(Auth.Admin).AddGroup(Group.GetRandom()).Logout();
         }
-        private bool IsElementPresent(By by)
+
+        [Test]
+        public void AddGroupTest()
+        {
+            AddGroup();
+        }
+
+
+        private bool IsElementPresent(By by, IWebDriver driver)
         {
             try
             {
@@ -56,7 +63,7 @@ namespace TestProject1
             }
         }
 
-        private bool IsAlertPresent()
+        private bool IsAlertPresent(IWebDriver driver)
         {
             try
             {
@@ -69,7 +76,7 @@ namespace TestProject1
             }
         }
 
-        private string CloseAlertAndGetItsText()
+        private string CloseAlertAndGetItsText(IWebDriver driver)
         {
             try
             {
