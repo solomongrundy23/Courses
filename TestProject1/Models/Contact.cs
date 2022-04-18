@@ -1,11 +1,7 @@
 ﻿using Bogus;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace TestProject1
+namespace AddressBookAutotests.Models
 {
     public class Contact
     {
@@ -100,6 +96,7 @@ namespace TestProject1
                 Contact result = new Contact();
                 Faker fakerRu = new Faker("ru");
                 Faker faker = new Faker();
+                FIO fio = FIO.Random();
                 result.Aday = faker.Random.Int(1, 29).ToString();
                 result.Address = fakerRu.Address.FullAddress();
                 result.Address2 = fakerRu.Address.FullAddress();
@@ -113,11 +110,11 @@ namespace TestProject1
                 result.Email2 = faker.Internet.Email();
                 result.Email3 = faker.Internet.Email();
                 result.Fax = fakerRu.Phone.PhoneNumber();
-                result.Firstname = fakerRu.Name.FirstName();
+                result.Firstname =fio.Name;
                 result.Home = fakerRu.Phone.PhoneNumber();
                 result.Homepage = faker.Internet.Url();
-                result.Lastname = fakerRu.Name.LastName();
-                result.Middlename = fakerRu.Name.FirstName();
+                result.Lastname = fio.SurName;
+                result.Middlename = fio.FatherName;
                 result.Mobile = fakerRu.Phone.PhoneNumber();
                 result.Nickname = fakerRu.Random.Word();
                 result.Notes = fakerRu.Random.Words();
