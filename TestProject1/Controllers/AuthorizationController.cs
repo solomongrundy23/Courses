@@ -9,12 +9,12 @@ namespace AddressBookAutotests.Controllers
 
         public ControllersManager Login(Auth auth)
         {
-            Manager.driver.FindElement(By.Name("user")).Click();
-            Manager.driver.FindElement(By.Name("user")).Clear();
-            Manager.driver.FindElement(By.Name("user")).SendKeys(auth.Username);
-            Manager.driver.FindElement(By.Name("pass")).Clear();
-            Manager.driver.FindElement(By.Name("pass")).SendKeys(auth.Password);
-            Manager.driver.FindElement(By.XPath("//input[@value='Login']")).Click();
+            Driver.FindElement(By.Name("user")).Click();
+            Driver.FindElement(By.Name("user")).Clear();
+            Driver.FindElement(By.Name("user")).SendKeys(auth.Username);
+            Driver.FindElement(By.Name("pass")).Clear();
+            Driver.FindElement(By.Name("pass")).SendKeys(auth.Password);
+            Driver.FindElement(By.XPath("//*[@id=\"LoginForm\"]/input[3]")).Click();
             return Manager;
         }
 

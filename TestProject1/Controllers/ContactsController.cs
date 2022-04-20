@@ -4,11 +4,11 @@ using AddressBookAutotests.Models;
 
 namespace AddressBookAutotests.Controllers
 {
-    public  class ContactsController : BaseController
+    public class ContactsController : BaseController
     {
         public ContactsController(ControllersManager manager) : base(manager) { }
 
-        public ControllersManager AddContactFillFields(Contact contact)
+        public ControllersManager AddContactFillFields(CreateContactData contact)
         {
             Driver.FindElement(By.Name("firstname")).Click();
             Driver.FindElement(By.Name("firstname")).Clear();
@@ -37,7 +37,6 @@ namespace AddressBookAutotests.Controllers
             Driver.FindElement(By.Name("mobile")).Click();
             Driver.FindElement(By.Name("mobile")).Clear();
             Driver.FindElement(By.Name("mobile")).SendKeys(contact.Mobile);
-            Driver.FindElement(By.XPath("//div[@id='content']/form/label[13]")).Click();
             Driver.FindElement(By.Name("work")).Click();
             Driver.FindElement(By.Name("work")).Clear();
             Driver.FindElement(By.Name("work")).SendKeys(contact.Work);
@@ -79,20 +78,60 @@ namespace AddressBookAutotests.Controllers
             Driver.FindElement(By.Name("address2")).Click();
             Driver.FindElement(By.Name("address2")).Clear();
             Driver.FindElement(By.Name("address2")).SendKeys(contact.Address2);
-            Driver.FindElement(By.Name("theform")).Click();
             Driver.FindElement(By.Name("phone2")).Click();
             Driver.FindElement(By.Name("phone2")).Clear();
             Driver.FindElement(By.Name("phone2")).SendKeys(contact.Phone2);
             Driver.FindElement(By.Name("notes")).Click();
             Driver.FindElement(By.Name("notes")).Clear();
             Driver.FindElement(By.Name("notes")).SendKeys(contact.Notes);
-            
+
             return Manager;
         }
 
-        public ControllersManager AddContactApply()
+        public ControllersManager PressAddContactApply()
         {
-            Driver.FindElement(By.XPath("//div[@id='content']/form/input[21]")).Click();
+            Driver.FindElement(By.Name("submit")).Click();
+            return Manager;
+        }
+
+        public ControllersManager GetContactList(out ReturnedContacts elements)
+        {
+            elements = new ReturnedContacts(Driver.FindElements(By.Name("entry")));
+            return Manager;
+        }
+
+        public ControllersManager CheckeBoxContact(IWebElement element)
+        {
+            element.FindElement(By.Name("selected[]")).Click();
+            return Manager;
+        }
+
+        public ControllersManager PressDelete()
+        {
+            Driver.FindElement(By.XPath("//*[@id='content']/form[2]/div[2]/input")).Click();
+            try
+            {
+                Driver.SwitchTo().Alert().Accept();
+            }
+            catch { }
+            return Manager;
+        }
+
+        public ControllersManager PressEdit(IWebElement contactElement)
+        {
+            contactElement.FindElement(By.XPath("//td[8]/a/img")).Click();
+            return Manager;
+        }
+
+        public ControllersManager PressDeleteFromEdtior()
+        {
+            Driver.FindElement(By.XPath("//*[@id=\"content\"]/form[2]/input[2]")).Click();
+            return Manager;
+        }
+
+        public ControllersManager PressUpdate()
+        {
+            Driver.FindElement(By.XPath("//*[@id='content']/form[1]/input[22]")).Click();
             return Manager;
         }
     }

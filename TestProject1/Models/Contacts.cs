@@ -1,9 +1,27 @@
 ﻿using Bogus;
+using OpenQA.Selenium;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace AddressBookAutotests.Models
 {
-    public class Contact
+    public class ReturnedContacts
+    {
+        public ReadOnlyCollection<IWebElement> ContactsTable { get; }
+
+        public ReturnedContacts(ReadOnlyCollection<IWebElement> contactsTable)
+        {
+            ContactsTable = contactsTable;
+        }
+
+        public IWebElement Random()
+        {
+            if (ContactsTable.Count == 0) throw new Exception("ReturnedContacts is Empty");
+            return ContactsTable[new Random().Next(ContactsTable.Count - 1)];
+        }
+    }
+    public class CreateContactData
     {
         public string? Aday;
         public string? Address;
@@ -31,8 +49,8 @@ namespace AddressBookAutotests.Models
         public string? Theform;
         public string? Title;
         public string? Work;
-        public Contact() { }
-        public Contact(
+        public CreateContactData() { }
+        public CreateContactData(
             string aday,
             string address,
             string address2,
@@ -59,8 +77,8 @@ namespace AddressBookAutotests.Models
             string theform,
             string title,
             string work
-            ) 
-        { 
+            )
+        {
             Aday = aday;
             Address = address;
             Address2 = address2;
@@ -89,41 +107,38 @@ namespace AddressBookAutotests.Models
             Work = work;
         }
 
-        public static Contact Random
+        public static CreateContactData Random()
         {
-            get
-            {
-                Contact result = new Contact();
-                Faker fakerRu = new Faker("ru");
-                Faker faker = new Faker();
-                FIO fio = FIO.Random();
-                result.Aday = faker.Random.Int(1, 29).ToString();
-                result.Address = fakerRu.Address.FullAddress();
-                result.Address2 = fakerRu.Address.FullAddress();
-                result.Amonth = faker.Date.Month();
-                result.Ayear = faker.Random.Int(1900, 2022).ToString();
-                result.Bday = faker.Random.Int(1, 29).ToString();
-                result.Bmonth = faker.Date.Month();
-                result.Byear = faker.Random.Int(1900, 2022).ToString();
-                result.Company = fakerRu.Company.CompanyName();
-                result.Email = faker.Internet.Email();
-                result.Email2 = faker.Internet.Email();
-                result.Email3 = faker.Internet.Email();
-                result.Fax = fakerRu.Phone.PhoneNumber();
-                result.Firstname =fio.Name;
-                result.Home = fakerRu.Phone.PhoneNumber();
-                result.Homepage = faker.Internet.Url();
-                result.Lastname = fio.SurName;
-                result.Middlename = fio.FatherName;
-                result.Mobile = fakerRu.Phone.PhoneNumber();
-                result.Nickname = fakerRu.Random.Word();
-                result.Notes = fakerRu.Random.Words();
-                result.Phone2 = fakerRu.Phone.PhoneNumber();
-                result.Theform = faker.Random.Word();
-                result.Title = fakerRu.Random.Word();
-                result.Work = fakerRu.Phone.PhoneNumber();
-                return result;
-            }
+            CreateContactData result = new CreateContactData();
+            Faker fakerRu = new Faker("ru");
+            Faker faker = new Faker();
+            FIO fio = FIO.Random();
+            result.Aday = faker.Random.Int(1, 29).ToString();
+            result.Address = fakerRu.Address.FullAddress();
+            result.Address2 = fakerRu.Address.FullAddress();
+            result.Amonth = faker.Date.Month();
+            result.Ayear = faker.Random.Int(1900, 2022).ToString();
+            result.Bday = faker.Random.Int(1, 29).ToString();
+            result.Bmonth = faker.Date.Month();
+            result.Byear = faker.Random.Int(1900, 2022).ToString();
+            result.Company = fakerRu.Company.CompanyName();
+            result.Email = faker.Internet.Email();
+            result.Email2 = faker.Internet.Email();
+            result.Email3 = faker.Internet.Email();
+            result.Fax = fakerRu.Phone.PhoneNumber();
+            result.Firstname = fio.Name;
+            result.Home = fakerRu.Phone.PhoneNumber();
+            result.Homepage = faker.Internet.Url();
+            result.Lastname = fio.SurName;
+            result.Middlename = fio.FatherName;
+            result.Mobile = fakerRu.Phone.PhoneNumber();
+            result.Nickname = fakerRu.Random.Word();
+            result.Notes = fakerRu.Random.Words();
+            result.Phone2 = fakerRu.Phone.PhoneNumber();
+            result.Theform = faker.Random.Word();
+            result.Title = fakerRu.Random.Word();
+            result.Work = fakerRu.Phone.PhoneNumber();
+            return result;
         }
     }
 }

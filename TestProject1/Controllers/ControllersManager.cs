@@ -1,9 +1,5 @@
 ﻿using OpenQA.Selenium;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AddressBookAutotests.Controllers
 {
@@ -21,11 +17,14 @@ namespace AddressBookAutotests.Controllers
         private ContactsController? contacts;
         private GroupsControllers? groups;
         private NavigateContoller? navigate;
+        private Scenarios? methods;
 
         public AuthorizationController Authorization { get => authorization ??= new AuthorizationController(this); }
         public ContactsController Contacts { get => contacts ??= new ContactsController(this); }
         public GroupsControllers Groups { get => groups ??= new GroupsControllers(this); }
         public NavigateContoller Navigate { get => navigate ??= new NavigateContoller(this); }
+
+        public Scenarios Methods { get => methods ??= new Scenarios(this); }
 
         public void Dispose()
         {
