@@ -41,21 +41,21 @@ namespace AddressBookAutotests
         [Description("Add new group")]
         public void AddGroupTest()
         {
-            Manager.Methods.AddGroup(CreateGroupData.Random());
+            Manager.Scenarios.AddGroup(CreateGroupData.Random());
         }
 
         [Test]
         [Description("Edit group")]
         public void EditGroupTest()
         {
-            Manager.Methods.EditGroup();
+            Manager.Scenarios.EditGroup();
         }
 
         [Test]
         [Description("Remove group")]
         public void RemoveGroupTest()
         {
-            Manager.Methods.RemoveGroup();
+            Manager.Scenarios.RemoveGroup();
         }
     }
 }

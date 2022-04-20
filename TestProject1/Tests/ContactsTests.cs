@@ -41,35 +41,35 @@ namespace AddressBookAutotests
         [Description("Add contact without group")]
         public void AddNewContactWithoutGroupTest()
         {
-            Manager.Methods.AddNewContact(false);
+            Manager.Scenarios.AddNewContact(false);
         }
 
         [Test]
         [Description("Add contact with group")]
         public void AddNewContactTest()
         {
-            Manager.Methods.AddNewContact(true);
+            Manager.Scenarios.AddNewContact(true);
         }
 
         [Test]
         [Description("Edit contact")]
         public void EditContactTest()
         {
-            Manager.Methods.EditContact();
+            Manager.Scenarios.EditContact();
         }
 
         [Test]
         [Description("Remove contact from contacts page")]
         public void RemoveContactTestFromContacts()
         {
-            Manager.Methods.RemoveContact(false);
+            Manager.Scenarios.RemoveContact(false);
         }
 
         [Test]
         [Description("Remove contact from contact's editor")]
         public void RemoveContactTestFromEditor()
         {
-            Manager.Methods.RemoveContact(true);
+            Manager.Scenarios.RemoveContact(true);
         }
     }
 }
