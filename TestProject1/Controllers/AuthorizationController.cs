@@ -18,9 +18,29 @@ namespace AddressBookAutotests.Controllers
             return Manager;
         }
 
+        public bool IsLoggedIn()
+        {
+            return ExistsElement("logout");
+        }
+
+        public bool IsLoggedIn(string userName)
+        {
+            try
+            {
+                return Manager
+                    .Driver
+                    .FindElement(By.XPath("//*[@id='top']/form/b"))
+                    .Text == $"({userName})";
+            }
+            catch (NoSuchElementException ex)
+            {
+                return false;
+            }
+        }
+
         public ControllersManager Logout()
         {
-            Manager.driver.FindElement(By.LinkText("Logout")).Click();
+            Manager.Driver.FindElement(By.LinkText("Logout")).Click();
             return Manager;
         }
     }

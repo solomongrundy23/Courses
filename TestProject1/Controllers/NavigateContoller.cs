@@ -1,4 +1,5 @@
 ﻿using OpenQA.Selenium;
+using System;
 
 namespace AddressBookAutotests.Controllers
 {
@@ -6,9 +7,16 @@ namespace AddressBookAutotests.Controllers
     {
         public NavigateContoller(ControllersManager manager) : base(manager) { }
 
-        public ControllersManager NavigateHomePage()
+        public ControllersManager StartPage()
         {
+            if (Driver.Url != ControllersSettings.BaseUrl + "/addressbook/")
             Driver.Navigate().GoToUrl($"{ControllersSettings.BaseUrl}/addressbook/");
+            return Manager;
+        }
+
+        public ControllersManager HomePage()
+        {
+            Driver.FindElement(By.XPath("//*[@id='nav']/ul/li[1]/a")).Click();
             return Manager;
         }
 
@@ -20,7 +28,9 @@ namespace AddressBookAutotests.Controllers
 
         public ControllersManager ToGroups()
         {
-            Driver.FindElement(By.LinkText("groups")).Click();
+            if (!((Driver.Url == ControllersSettings.BaseUrl + "/addressbook/group.php")
+                && (ExistsElement("new") || Manager.Groups.GroupIsCreated())))
+                Driver.FindElement(By.LinkText("groups")).Click();
             return Manager;
         }
 

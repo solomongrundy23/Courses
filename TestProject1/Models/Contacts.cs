@@ -1,7 +1,6 @@
 ﻿using Bogus;
 using OpenQA.Selenium;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace AddressBookAutotests.Models

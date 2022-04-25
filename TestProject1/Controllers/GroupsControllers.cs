@@ -10,15 +10,9 @@ namespace AddressBookAutotests.Controllers
 
         public ControllersManager FillFields(CreateGroupData group)
         {
-            Driver.FindElement(By.Name("group_name")).Click();
-            Driver.FindElement(By.Name("group_name")).Clear();
-            Driver.FindElement(By.Name("group_name")).SendKeys(group.Name);
-            Driver.FindElement(By.Name("group_header")).Click();
-            Driver.FindElement(By.Name("group_header")).Clear();
-            Driver.FindElement(By.Name("group_header")).SendKeys(group.Header);
-            Driver.FindElement(By.Name("group_footer")).Click();
-            Driver.FindElement(By.Name("group_footer")).Clear();
-            Driver.FindElement(By.Name("group_footer")).SendKeys(group.Footer);
+            FillTextBox("group_name", group.Name);
+            FillTextBox("group_header", group.Header);
+            FillTextBox("group_footer", group.Footer);
             return Manager;
         }
 
@@ -51,6 +45,19 @@ namespace AddressBookAutotests.Controllers
             var groupElements = Driver.FindElements(By.Name("selected[]"));
             groupElements.Where(x => x.GetAttribute("value") == value).First().Click();
             return Manager;
+        }
+
+        public bool GroupIsCreated()
+        {
+            try
+            {
+                var element = Driver.FindElement(By.ClassName("msgbox"));
+                return element.Text == "A new group has been entered into the address book.\r\nreturn to the group page";
+            }
+            catch (NoSuchElementException ex)
+            {
+                return false;
+            }
         }
 
         public ControllersManager PressRemove()

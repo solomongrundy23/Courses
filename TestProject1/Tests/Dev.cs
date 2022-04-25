@@ -8,11 +8,10 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Firefox;
 
-namespace AddressBookAutotests
+namespace AddressBookAutotests.Dev
 {
-    //[TestFixture(typeof(FirefoxDriver))]
-    [TestFixture(typeof(ChromeDriver))]
-    public class DevTest<TypedWebDriver> where TypedWebDriver : IWebDriver, new()
+    [TestFixture()]
+    public class DevTest
     {
         private ControllersManager? _manager;
         private ControllersManager Manager
@@ -26,16 +25,17 @@ namespace AddressBookAutotests
         {
             try
             {
-                Manager.Dispose();
+
             }
             catch (Exception)
             {
             }
         }
 
+        [SetUp]
         public void Method()
         {
-            Thread.Sleep(1);
+            Manager = ControllersManager.GetInstance();
         }
 
         [Test]

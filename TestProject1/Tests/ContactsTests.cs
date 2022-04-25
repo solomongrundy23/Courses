@@ -1,43 +1,12 @@
-﻿using AddressBookAutotests.Controllers;
-using AddressBookAutotests.Models;
-using NUnit.Framework;
-using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.Firefox;
-using System;
+﻿using NUnit.Framework;
 
-namespace AddressBookAutotests
+namespace AddressBookAutotests.Tests
 {
-    [TestFixture(typeof(FirefoxDriver))]
-    [TestFixture(typeof(ChromeDriver))]
-    public class ContactsTests<TypedWebDriver> where TypedWebDriver : IWebDriver, new()
+    [TestFixture]
+    public class ContactsTests : TestWithAuth
     {
-        private ControllersManager? _manager;
-        private ControllersManager Manager
-        { 
-            get { if (_manager == null) throw new NullReferenceException("Manager is null"); else return _manager; }
-            set { _manager = value; }
-        }
-
-        [SetUp]
-        public void SetupTest()
-        {
-            Manager = new ControllersManager(new TypedWebDriver());
-        }
-
-        [TearDown]
-        public void TeardownTest()
-        {
-            try
-            {
-                Manager.Dispose();
-            }
-            catch (Exception)
-            {
-            }
-        }
-
         [Test]
+        [Order(1)]
         [Description("Add contact without group")]
         public void AddNewContactWithoutGroupTest()
         {
@@ -45,6 +14,7 @@ namespace AddressBookAutotests
         }
 
         [Test]
+        [Order(2)]
         [Description("Add contact with group")]
         public void AddNewContactTest()
         {
@@ -52,6 +22,7 @@ namespace AddressBookAutotests
         }
 
         [Test]
+        [Order(3)]
         [Description("Edit contact")]
         public void EditContactTest()
         {
@@ -59,6 +30,15 @@ namespace AddressBookAutotests
         }
 
         [Test]
+        [Order(3)]
+        [Description("Edit contact")]
+        public void EditContactFIONotChange()
+        {
+            Manager.Scenarios.EditContactFIONotChange();
+        }
+
+        [Test]
+        [Order(4)]
         [Description("Remove contact from contacts page")]
         public void RemoveContactTestFromContacts()
         {
@@ -66,6 +46,7 @@ namespace AddressBookAutotests
         }
 
         [Test]
+        [Order(5)]
         [Description("Remove contact from contact's editor")]
         public void RemoveContactTestFromEditor()
         {

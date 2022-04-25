@@ -1,4 +1,5 @@
 ﻿using AddressBookAutotests.Models;
+using NUnit.Framework;
 using System;
 
 namespace AddressBookAutotests.Controllers
@@ -12,47 +13,52 @@ namespace AddressBookAutotests.Controllers
 
         private ControllersManager Manager { get; }
 
-        public void AddGroup(CreateGroupData group)
+        public void AddGroup(CreateGroupData? group = null)
         {
-            Manager.Navigate.NavigateHomePage()
-                .Authorization.Login(Auth.Admin)
+            group ??= CreateGroupData.Random();
+            Assert.IsTrue(
+            Manager
                 .Navigate.ToGroups()
                 .Navigate.AddNewGroup()
                 .Groups.FillFields(group)
                 .Groups.PressSubmit()
-                .Authorization.Logout();
+                .Groups.GroupIsCreated()
+            );
         }
 
         public void RemoveGroup()
         {
-            Manager.Navigate.NavigateHomePage()
-                .Authorization.Login(Auth.Admin)
-                .Navigate.ToGroups()
-                .Groups.GetList(out var groups)
+            Manager.Navigate.ToGroups().Groups.GetList(out var groups);
+            if (groups.Count == 0)
+            {
+                AddGroup();
+                Manager.Navigate.ToGroups().Groups.GetList(out groups);
+            }
+
+            Manager
                 .Groups.Select(groups.Random().Value)
-                .Groups.PressRemove()
-                .Authorization.Logout();
+                .Groups.PressRemove();
         }
 
         public void EditGroup()
         {
             var group = CreateGroupData.Random();
-            Manager.Navigate.NavigateHomePage()
-                .Authorization.Login(Auth.Admin)
-                .Navigate.ToGroups()
-                .Groups.GetList(out var groups)
-                .Groups.Select(groups.Random().Value)
-                .Groups.PressEdit()
-                .Groups.FillFields(group)
-                .Groups.PressUpdate()
-                .Authorization.Logout();
+            Manager.Navigate.ToGroups().Groups.GetList(out var groups);
+            if (groups.Count == 0)
+            {
+                AddGroup(CreateGroupData.Random());
+                Manager.Navigate.ToGroups().Groups.GetList(out groups);
+            }
+            Manager
+                   .Groups.Select(groups.Random().Value)
+                   .Groups.PressEdit()
+                   .Groups.FillFields(group)
+                   .Groups.PressUpdate();
         }
 
         public void AddNewContact(bool group, CreateContactData? contact = null)
         {
             contact ??= CreateContactData.Random();
-            Manager.Navigate.NavigateHomePage()
-                   .Authorization.Login(Auth.Admin);
             if (group)
             {
                 Manager.Navigate.ToGroups()
@@ -60,9 +66,7 @@ namespace AddressBookAutotests.Controllers
                 if (groups.Count == 0)
                 {
                     var newGroup = CreateGroupData.Random();
-                    Manager.Navigate.AddNewGroup()
-                           .Groups.FillFields(newGroup)
-                           .Groups.PressSubmit();
+                    AddGroup(newGroup);
                     contact.New_group = newGroup.Name;
                 }
                 else
@@ -73,38 +77,66 @@ namespace AddressBookAutotests.Controllers
             Manager
               .Navigate.AddNewContact()
               .Contacts.AddContactFillFields(contact)
-              .Contacts.PressAddContactApply()
-              .Authorization.Logout();
+              .Contacts.PressAddContactApply();
         }
 
-        public void EditContact()
+        public void EditContact(CreateContactData? contactData = null)
         {
-            Manager.Navigate.NavigateHomePage()
-                   .Authorization.Login(Auth.Admin)
-                    .Contacts.GetContactList(out var contacts)
-                    .Contacts.PressEdit(contacts.Random())
-                    .Contacts.AddContactFillFields(CreateContactData.Random())
-                    .Contacts.PressUpdate()
-                    .Authorization.Logout();
+            Manager.Navigate.ToGroups().Groups.GetList(out var groups);
+            if (groups.Count == 0)
+            {
+                AddGroup(CreateGroupData.Random());
+                Manager.Navigate.ToGroups().Groups.GetList(out groups);
+            }
+            Manager.Navigate.HomePage().Contacts.GetContactList(out var contacts);
+            if (contacts.ContactsTable.Count == 0)
+            {
+                AddNewContact(true);
+                Manager.Navigate.HomePage().Contacts.GetContactList(out contacts);
+            }
+            Manager
+                   .Contacts.PressEdit(contacts.Random())
+                   .Contacts.AddContactFillFields(contactData ?? CreateContactData.Random())
+                   .Contacts.PressUpdate();
+        }
+
+        public void EditContactFIONotChange()
+        { 
+            var contact = CreateContactData.Random();
+            contact.Firstname = null;
+            contact.Lastname = null;
+            contact.Middlename = null;
+            EditContact(contact);
         }
 
         public void RemoveContact(bool fromEditor)
         {
-                Manager.Navigate.NavigateHomePage()
-                       .Authorization.Login(Auth.Admin)
-                       .Contacts.GetContactList(out var contacts);
-                if (fromEditor)
-                {
-                    Manager.Contacts.PressEdit(contacts.Random())
-                           .Contacts.PressDeleteFromEdtior();
-                }
-                else
-                {
-                    Manager.Contacts.CheckeBoxContact(contacts.Random())
-                           .Contacts.PressDelete();
-                }
-                Manager.Authorization.Logout();
-        
+            Manager.Navigate.HomePage().Contacts.GetContactList(out var contacts);
+            if (contacts.ContactsTable.Count == 0)
+            {
+                AddNewContact(true);
+                Manager.Sleep(2).Navigate.HomePage().Contacts.GetContactList(out contacts);
+            }
+            if (fromEditor)
+            {
+                Manager.Contacts.PressEdit(contacts.Random())
+                       .Contacts.PressDeleteFromEdtior();
+            }
+            else
+            {
+                Manager.Contacts.CheckeBoxContact(contacts.Random())
+                       .Contacts.PressDelete();
+            }
+        }
+
+        public void Login(Auth credentials, bool success = true)
+        {
+            Manager.Authorization.Login(credentials);
+            var result = Manager.Authorization.IsLoggedIn(credentials.Username);
+            if (success)
+                Assert.IsTrue(result);
+            else
+                Assert.IsFalse(result);
         }
     }
 }
