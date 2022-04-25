@@ -6,12 +6,7 @@ namespace AddressBookAutotests.Tests
 {
     public class BaseTest
     {
-        private ControllersManager? _manager;
-        public ControllersManager Manager
-        {
-            get { if (_manager == null) throw new NullReferenceException("Manager is null"); else return _manager; }
-            private set { _manager = value; }
-        }
+        public ControllersManager? Manager { get; set; }
 
         [SetUp]
         public void InitManager()

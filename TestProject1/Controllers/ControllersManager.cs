@@ -1,6 +1,5 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.Firefox;
 using System;
 using System.Threading;
 
@@ -16,14 +15,14 @@ namespace AddressBookAutotests.Controllers
             {
                 _managers.Value = new ControllersManager();
             }
-            if (_managers.Value == null) throw new ArgumentNullException("Thread values == null");
-            return _managers.Value;
+            return _managers.Value ?? throw new ArgumentNullException("Thread values == null");
         }
 
         public IWebDriver Driver { get; private set; }
 
         private ControllersManager()
         {
+            AppDomain.CurrentDomain.ProcessExit += new EventHandler(OnApplicationClose);
             Driver = new ChromeDriver();
             Driver.Manage().Window.Maximize();
         }
@@ -46,24 +45,27 @@ namespace AddressBookAutotests.Controllers
             DestroyManager();
         }
 
-        public void Dispose()
-        {
-            DestroyManager();
-        }
-
         private void DestroyManager()
         {
-            try
-            {
-                Driver.Quit();
-            }
-            catch { }
+            Driver.Quit();
+            Driver.Dispose();
+            GC.SuppressFinalize(this);
+        }
+
+        public void OnApplicationClose(object? sender, EventArgs e)
+        {
+            this.Dispose();
         }
 
         public ControllersManager Sleep(int seconds)
         { 
             Thread.Sleep(seconds * 1000);
             return this;
+        }
+
+        public void Dispose()
+        {
+            DestroyManager();
         }
     }
 }
