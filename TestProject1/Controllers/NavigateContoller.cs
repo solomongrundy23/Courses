@@ -28,9 +28,10 @@ namespace AddressBookAutotests.Controllers
 
         public ControllersManager ToGroups()
         {
-            if (!((Driver.Url == ControllersSettings.BaseUrl + "/addressbook/group.php")
-                && (ExistsElement("new") || Manager.Groups.GroupIsCreated())))
-                Driver.FindElement(By.LinkText("groups")).Click();
+            if (Driver.Url == ControllersSettings.BaseUrl + "/addressbook/group.php")
+                if (ExistsElement("new") || !Manager.Groups.GroupIsCreated())
+                    return Manager;
+            Driver.FindElement(By.LinkText("groups")).Click();
             return Manager;
         }
 

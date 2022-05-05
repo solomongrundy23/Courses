@@ -1,11 +1,11 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Firefox;
 using System;
 using System.Threading;
 
 namespace AddressBookAutotests.Controllers
 {
-
     public class ControllersManager : IDisposable
     {
         private static ThreadLocal<ControllersManager> _managers = new ThreadLocal<ControllersManager>();
@@ -47,14 +47,15 @@ namespace AddressBookAutotests.Controllers
 
         private void DestroyManager()
         {
+            if (_disposed) return;
             Driver.Quit();
             Driver.Dispose();
-            GC.SuppressFinalize(this);
+            _disposed = true;
         }
 
         public void OnApplicationClose(object? sender, EventArgs e)
         {
-            this.Dispose();
+            Dispose();
         }
 
         public ControllersManager Sleep(int seconds)
@@ -63,6 +64,7 @@ namespace AddressBookAutotests.Controllers
             return this;
         }
 
+        private bool _disposed = false;
         public void Dispose()
         {
             DestroyManager();

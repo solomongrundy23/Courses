@@ -1,23 +1,73 @@
 ﻿using Bogus;
 using OpenQA.Selenium;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace AddressBookAutotests.Models
 {
-    public class ReturnedContacts
+    public class ReturnedContact : IEquatable<ReturnedContact>, IComparable<ReturnedContact>
     {
-        public ReadOnlyCollection<IWebElement> ContactsTable { get; }
+        public IWebElement CheckBox { get; set; }
+        public string LastName { get; set; }
+        public string FirstName { get; set; }
+        public string Address { get; set; }
+        public IWebElement Edit { get; set; }
 
-        public ReturnedContacts(ReadOnlyCollection<IWebElement> contactsTable)
-        {
-            ContactsTable = contactsTable;
+        public ReturnedContact(IWebElement checkBox, string lastName, string firstName, string address, IWebElement edit)
+        { 
+            CheckBox = checkBox;
+            LastName = lastName;
+            FirstName = firstName;
+            Address = address;
+            Edit = edit;
         }
 
-        public IWebElement Random()
+        public override string ToString() => $"{LastName} {FirstName} {Address}";
+
+        public int CompareTo(ReturnedContact? other)
         {
-            if (ContactsTable.Count == 0) throw new Exception("ReturnedContacts is Empty");
-            return ContactsTable[new Random().Next(ContactsTable.Count - 1)];
+            int result = string.Compare(other?.LastName, other?.LastName);
+            if (result == 0)
+            {
+                result = string.Compare(other?.FirstName, other?.FirstName);
+                if (result == 0) result = string.Compare(other?.Address, other?.Address);
+            }
+            return result;
+        }
+
+        public bool Equals(ReturnedContact? other)
+        {
+            if (other == null) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return other?.LastName == LastName &&
+                   other?.FirstName == FirstName &&
+                   other?.Address == Address;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(LastName, FirstName, Address);
+        }
+    }
+    public class ReturnedContacts : List<ReturnedContact>
+    {
+        public bool isEmpty => this.Count == 0;
+
+        public ReturnedContact Random()
+        {
+            if (this.Count == 0) throw new Exception("ContactsTable is Empty");
+            return this[new Random().Next(this.Count - 1)];
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return base.Equals(obj);
+        }
+
+        public override int GetHashCode()
+        {
+            throw new NotImplementedException();
         }
     }
     public class CreateContactData
@@ -106,12 +156,11 @@ namespace AddressBookAutotests.Models
             Work = work;
         }
 
-        public static CreateContactData Random()
+        public static CreateContactData Random(bool fioIsNull = false)
         {
             CreateContactData result = new CreateContactData();
             Faker fakerRu = new Faker("ru");
             Faker faker = new Faker();
-            FIO fio = FIO.Random();
             result.Aday = faker.Random.Int(1, 29).ToString();
             result.Address = fakerRu.Address.FullAddress();
             result.Address2 = fakerRu.Address.FullAddress();
@@ -125,11 +174,15 @@ namespace AddressBookAutotests.Models
             result.Email2 = faker.Internet.Email();
             result.Email3 = faker.Internet.Email();
             result.Fax = fakerRu.Phone.PhoneNumber();
-            result.Firstname = fio.Name;
             result.Home = fakerRu.Phone.PhoneNumber();
             result.Homepage = faker.Internet.Url();
-            result.Lastname = fio.SurName;
-            result.Middlename = fio.FatherName;
+            if (!fioIsNull)
+            {
+                FIO fio = FIO.Random();
+                result.Firstname = fio.Name;
+                result.Lastname = fio.SurName;
+                result.Middlename = fio.FatherName;
+            }
             result.Mobile = fakerRu.Phone.PhoneNumber();
             result.Nickname = fakerRu.Random.Word();
             result.Notes = fakerRu.Random.Words();

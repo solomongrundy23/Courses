@@ -2,6 +2,7 @@
 using OpenQA.Selenium;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace AddressBookAutotests.Models
 {
@@ -14,8 +15,10 @@ namespace AddressBookAutotests.Models
             if (Count == 0) throw new Exception("ReturnedGroups is Empty");
             return this[new Random().Next(Count - 1)];
         }
+        public ReturnedGroup[] Find(string text) => this.Where(x => x.Text == text).ToArray();
+        public ReturnedGroup? FindFirst(string text) => this.Where(x => x.Text == text).FirstOrDefault();
     }
-    public class ReturnedGroup
+    public class ReturnedGroup : IComparable<ReturnedGroup>, IEquatable<ReturnedGroup>
     {
         public ReturnedGroup(IWebElement webElement, string value, string text)
         { 
@@ -29,6 +32,23 @@ namespace AddressBookAutotests.Models
         public IWebElement WebElement { get; set; }
 
         public override string ToString() => $"{Value}: {Text}";
+
+        public int CompareTo(ReturnedGroup? other)
+        {
+            return string.Compare(other?.Text, Text);
+        }
+
+        public bool Equals(ReturnedGroup? other)
+        {
+            if (other == null) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return other.Text == Text;
+        }
+
+        public override int GetHashCode()
+        { 
+            return Text.GetHashCode();
+        }
     }
     public class CreateGroupData
     {

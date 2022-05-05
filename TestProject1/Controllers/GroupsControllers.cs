@@ -1,11 +1,15 @@
 ﻿using OpenQA.Selenium;
 using AddressBookAutotests.Models;
 using System.Linq;
+using System;
+using System.Collections.ObjectModel;
+using System.Collections.Generic;
 
 namespace AddressBookAutotests.Controllers
 {
     public class GroupsControllers : BaseController
     {
+        public ReturnedGroups CachedList { get; private set; } = new ReturnedGroups();
         public GroupsControllers(ControllersManager manager) : base(manager) { }
 
         public ControllersManager FillFields(CreateGroupData group)
@@ -28,23 +32,46 @@ namespace AddressBookAutotests.Controllers
             return Manager;
         }
 
-        public ControllersManager GetList(out ReturnedGroups groups)
+        public ControllersManager GetList()
         {
-            groups = new ReturnedGroups();
+            var groups = new ReturnedGroups();
             var groupElements = Driver.FindElements(By.ClassName("group"));
             foreach (var groupElement in groupElements)
             {
                 var checkBox = groupElement.FindElement(By.TagName("input"));
                 groups.Add(checkBox, checkBox.GetAttribute("value"), groupElement.Text);
             }
+            CachedList = groups;
             return Manager;
         }
 
-        public ControllersManager Select(string value)
+        public ControllersManager SelectByValue(string value)
         {
-            var groupElements = Driver.FindElements(By.Name("selected[]"));
-            groupElements.Where(x => x.GetAttribute("value") == value).First().Click();
+            var elements = GetGroupsElements().Where(x => x.GetAttribute("value") == value);
+            CollectionClicker(elements);
             return Manager;
+        }
+
+        public ControllersManager SelectByName(string name)
+        {
+            var elements = GetGroupsElements().Where(x => x.GetAttribute("text") == name);
+            CollectionClicker(elements);
+            return Manager;
+        }
+
+        private void CollectionClicker(ICollection<IWebElement> elements)
+        {
+            CollectionClicker(elements.Select(x => x));
+        }
+
+        private void CollectionClicker(IEnumerable<IWebElement> elements)
+        {
+            foreach (var element in elements) element.Click();
+        }
+
+        private ReadOnlyCollection<IWebElement> GetGroupsElements()
+        {
+            return Driver.FindElements(By.Name("selected[]"));
         }
 
         public bool GroupIsCreated()

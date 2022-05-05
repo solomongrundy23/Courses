@@ -1,11 +1,13 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
+using System;
+using System.Collections.Generic;
 
 namespace AddressBookAutotests.Controllers
 {
     public class BaseController
     {
-        protected ControllersManager Manager { get; private set; }
+        protected ControllersManager Manager { get; }
 
         public BaseController(ControllersManager manager)
         {
@@ -30,6 +32,11 @@ namespace AddressBookAutotests.Controllers
             if (value == null) return;
             Driver.FindElement(location).Click();
             new SelectElement(Driver.FindElement(location)).SelectByText(value);
+        }
+
+        private void CollectionClicker(ICollection<IWebElement> elements)
+        {
+            foreach (var element in elements) element.Click();
         }
 
         protected void SelectElementInComboBox(string name, string? value)

@@ -6,6 +6,7 @@ namespace AddressBookAutotests.Controllers
 {
     public class ContactsController : BaseController
     {
+        public ReturnedContacts CachedList { get; private set; } = new ReturnedContacts();
         public ContactsController(ControllersManager manager) : base(manager) { }
 
         public ControllersManager AddContactFillFields(CreateContactData contact)
@@ -51,15 +52,29 @@ namespace AddressBookAutotests.Controllers
             return Manager;
         }
 
-        public ControllersManager GetContactList(out ReturnedContacts elements)
+        public ControllersManager GetContactList()
         {
-            elements = new ReturnedContacts(Driver.FindElements(By.Name("entry")));
+            Driver.FindElement(By.XPath("//*[@id='nav']/ul/li[1]/a")).Click();
+            var contactsRows = Driver.FindElements(By.Name("entry"));
+            var tempList = new ReturnedContacts();
+            foreach (var contact in contactsRows)
+            {
+                IWebElement checkBox = contact.FindElement(By.Name("selected[]"));
+                string lastName = contact.FindElement(By.XPath("//td[1]")).Text;
+                string firstName = contact.FindElement(By.XPath("//td[2]")).Text;
+                string address = contact.FindElement(By.XPath("//td[3]")).Text;
+                IWebElement edit = contact.FindElement(By.XPath("//td[8]/a/img"));
+                tempList.Add(
+                    new ReturnedContact(checkBox, lastName, firstName, address, edit)
+                    );
+            }
+            CachedList = tempList;
             return Manager;
         }
-
-        public ControllersManager CheckeBoxContact(IWebElement element)
+        
+        public ControllersManager CheckeBoxContact(ReturnedContact contactElement)
         {
-            element.FindElement(By.Name("selected[]")).Click();
+            contactElement.CheckBox.Click();
             return Manager;
         }
 
@@ -74,9 +89,9 @@ namespace AddressBookAutotests.Controllers
             return Manager;
         }
 
-        public ControllersManager PressEdit(IWebElement contactElement)
+        public ControllersManager PressEdit(ReturnedContact contactElement)
         {
-            contactElement.FindElement(By.XPath("//td[8]/a/img")).Click();
+            contactElement.Edit.Click();
             return Manager;
         }
 
