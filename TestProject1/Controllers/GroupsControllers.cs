@@ -47,14 +47,14 @@ namespace AddressBookAutotests.Controllers
 
         public ControllersManager SelectByValue(string value)
         {
-            var elements = GetGroupsElements().Where(x => x.GetAttribute("value") == value);
+            var elements = CachedList.Where(x => x.Value == value).Select(x => x.WebElement);
             CollectionClicker(elements);
             return Manager;
         }
 
         public ControllersManager SelectByName(string name)
         {
-            var elements = GetGroupsElements().Where(x => x.GetAttribute("text") == name);
+            var elements = CachedList.Where(x => x.Text == name).Select(x => x.WebElement);
             CollectionClicker(elements);
             return Manager;
         }

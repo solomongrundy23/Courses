@@ -1,22 +1,18 @@
-using System;
-using AddressBookAutotests.Controllers;
+using AddressBookAutotests.DataSets;
 using AddressBookAutotests.Models;
 using NUnit.Framework;
-using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.Firefox;
 
 namespace AddressBookAutotests.Tests
 {
     [TestFixture]
     public class GroupsTest : TestWithAuth
     {
-        [Test]
+        [Test, TestCaseSource(typeof(DataProvider), nameof(DataProvider.CreateGroupDatas))]
         [Order(1)]
         [Description("Add new group")]
-        public void AddGroupTest()
+        public void AddGroupTest(CreateGroupData groupData)
         {
-            Manager.Scenarios.AddGroup(CreateGroupData.Random());
+            Manager.Scenarios.AddGroup(groupData);
         }
 
         [Test]

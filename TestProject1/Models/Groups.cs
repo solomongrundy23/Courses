@@ -3,6 +3,8 @@ using OpenQA.Selenium;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JsonHelper;
+using XMLHelper;
 
 namespace AddressBookAutotests.Models
 {
@@ -18,7 +20,7 @@ namespace AddressBookAutotests.Models
         public ReturnedGroup[] Find(string text) => this.Where(x => x.Text == text).ToArray();
         public ReturnedGroup? FindFirst(string text) => this.Where(x => x.Text == text).FirstOrDefault();
     }
-    public class ReturnedGroup : IComparable<ReturnedGroup>, IEquatable<ReturnedGroup>
+    public class ReturnedGroup : IComparable<ReturnedGroup>
     {
         public ReturnedGroup(IWebElement webElement, string value, string text)
         { 
@@ -35,14 +37,15 @@ namespace AddressBookAutotests.Models
 
         public int CompareTo(ReturnedGroup? other)
         {
-            return string.Compare(other?.Text, Text);
+            return string.Compare(Text, other?.Text);
         }
 
-        public bool Equals(ReturnedGroup? other)
+        public override bool Equals(object obj)
         {
-            if (other == null) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return other.Text == Text;
+            if (obj == null) return false;
+            if (!(obj is ReturnedGroup)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            return ((ReturnedGroup)obj).Text == Text;
         }
 
         public override int GetHashCode()
@@ -63,6 +66,8 @@ namespace AddressBookAutotests.Models
             Header = groupHeader;
             Footer = groupFooter;
         }
+
+        //public override string ToString() => this.ToJson(); пришлось убрать из за бага nunit, ждем обновления
 
         public static CreateGroupData Random()
         {

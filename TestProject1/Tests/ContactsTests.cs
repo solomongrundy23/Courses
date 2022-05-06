@@ -1,24 +1,26 @@
-﻿using NUnit.Framework;
+﻿using AddressBookAutotests.DataSets;
+using AddressBookAutotests.Models;
+using NUnit.Framework;
 
 namespace AddressBookAutotests.Tests
 {
     [TestFixture]
     public class ContactsTests : TestWithAuth
     {
-        [Test]
+        [Test, TestCaseSource(typeof(DataProvider), nameof(DataProvider.CreateContactDatas))]
         [Order(1)]
         [Description("Add contact without group")]
-        public void AddNewContactWithoutGroupTest()
+        public void AddNewContactWithoutGroupTest(CreateContactData contactData)
         {
-            Manager.Scenarios.AddNewContact(false);
+            Manager.Scenarios.AddNewContact(false, contactData);
         }
 
-        [Test]
+        [Test, TestCaseSource(typeof(DataProvider), nameof(DataProvider.CreateContactDatas))]
         [Order(2)]
         [Description("Add contact with group")]
-        public void AddNewContactTest()
+        public void AddNewContactTest(CreateContactData contactData)
         {
-            Manager.Scenarios.AddNewContact(true);
+            Manager.Scenarios.AddNewContact(true, contactData);
         }
 
         [Test]

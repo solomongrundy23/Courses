@@ -1,6 +1,7 @@
 ﻿using AddressBookAutotests.Models;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace AddressBookAutotests.Controllers
@@ -17,6 +18,11 @@ namespace AddressBookAutotests.Controllers
         public void AddGroup()
         {
             AddGroup(CreateGroupData.Random());
+        }
+
+        public void AddGroup(IEnumerable<CreateGroupData> groupList)
+        { 
+            foreach (var group in groupList) AddGroup(group);
         }
 
         public void AddGroup(CreateGroupData group)
@@ -64,8 +70,11 @@ namespace AddressBookAutotests.Controllers
                         .Groups.GetList()
                         .Groups.CachedList;
 
-            var condition = Manager.Groups.CachedList.Where(x => x.Text != removedGroup).ToList();
-            Assert.AreNotEqual(groups, condition);
+            groups.RemoveAll(x => x.Equals(removedGroup));
+            groups.Sort();
+            var actual = Manager.Groups.GetList().Groups.CachedList;
+            actual.Sort();
+            Assert.AreEqual(groups, actual);
         }
 
         public void EditGroup()
@@ -131,14 +140,14 @@ namespace AddressBookAutotests.Controllers
             }
             var contacts = Manager
                 .Navigate.HomePage()
-                .Contacts.GetContactList()
+                .Contacts.GetList()
                 .Contacts.CachedList;
             if (contacts.Count == 0)
             {
                 AddNewContact(true);
                 contacts = Manager
                     .Navigate.HomePage()
-                    .Contacts.GetContactList()
+                    .Contacts.GetList()
                     .Contacts.CachedList;
             }
             Manager
@@ -162,7 +171,7 @@ namespace AddressBookAutotests.Controllers
             if (
                 Manager
                 .Navigate.HomePage()
-                .Contacts.GetContactList()
+                .Contacts.GetList()
                 .Contacts.CachedList.Count() == 0
                 )
             {
@@ -171,7 +180,7 @@ namespace AddressBookAutotests.Controllers
             var contacts = Manager
                 .Sleep(2)
                 .Navigate.HomePage()
-                .Contacts.GetContactList()
+                .Contacts.GetList()
                 .Contacts.CachedList;
 
             var contact = contacts.Random();
@@ -188,8 +197,8 @@ namespace AddressBookAutotests.Controllers
 
             contacts.RemoveAll(x => x.Equals(contact));
             contacts.Sort();
-            var actual = Manager.Contacts.GetContactList().Contacts.CachedList;
-            contacts.Sort();
+            var actual = Manager.Contacts.GetList().Contacts.CachedList;
+            actual.Sort();
             Assert.AreEqual(contacts, actual);
         }
 

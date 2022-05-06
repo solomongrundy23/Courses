@@ -2,7 +2,7 @@
 using OpenQA.Selenium;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using JsonHelper;
 
 namespace AddressBookAutotests.Models
 {
@@ -27,11 +27,12 @@ namespace AddressBookAutotests.Models
 
         public int CompareTo(ReturnedContact? other)
         {
-            int result = string.Compare(other?.LastName, other?.LastName);
+            int result = string.Compare(this.LastName, other?.LastName);
             if (result == 0)
             {
-                result = string.Compare(other?.FirstName, other?.FirstName);
-                if (result == 0) result = string.Compare(other?.Address, other?.Address);
+                result = string.Compare(this.FirstName, other?.FirstName);
+                if (result == 0) 
+                    result = string.Compare(this.Address, other?.Address);
             }
             return result;
         }
@@ -98,6 +99,9 @@ namespace AddressBookAutotests.Models
         public string? Theform;
         public string? Title;
         public string? Work;
+
+        //public override string ToString() => this.ToJson();
+
         public CreateContactData() { }
         public CreateContactData(
             string aday,

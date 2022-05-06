@@ -52,7 +52,7 @@ namespace AddressBookAutotests.Controllers
             return Manager;
         }
 
-        public ControllersManager GetContactList()
+        public ControllersManager GetList()
         {
             Driver.FindElement(By.XPath("//*[@id='nav']/ul/li[1]/a")).Click();
             var contactsRows = Driver.FindElements(By.Name("entry"));
@@ -60,10 +60,10 @@ namespace AddressBookAutotests.Controllers
             foreach (var contact in contactsRows)
             {
                 IWebElement checkBox = contact.FindElement(By.Name("selected[]"));
-                string lastName = contact.FindElement(By.XPath("//td[1]")).Text;
-                string firstName = contact.FindElement(By.XPath("//td[2]")).Text;
-                string address = contact.FindElement(By.XPath("//td[3]")).Text;
-                IWebElement edit = contact.FindElement(By.XPath("//td[8]/a/img"));
+                string lastName = contact.FindElement(By.XPath("td[2]")).Text;
+                string firstName = contact.FindElement(By.XPath("td[3]")).Text;
+                string address = contact.FindElement(By.XPath("td[4]")).Text;
+                IWebElement edit = contact.FindElement(By.XPath("td[8]/a/img"));
                 tempList.Add(
                     new ReturnedContact(checkBox, lastName, firstName, address, edit)
                     );
