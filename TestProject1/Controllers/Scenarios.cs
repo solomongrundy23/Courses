@@ -99,9 +99,9 @@ namespace AddressBookAutotests.Controllers
                    .Groups.PressUpdate();
         }
 
-        public void AddNewContact(bool group, CreateContactData? contact = null)
+        public void AddNewContact(bool group, CreateContactData? contactData = null)
         {
-            contact ??= CreateContactData.Random();
+            contactData ??= CreateContactData.Random();
             if (group)
             {
                 var groups = Manager
@@ -112,17 +112,19 @@ namespace AddressBookAutotests.Controllers
                 {
                     var newGroup = CreateGroupData.Random();
                     AddGroup(newGroup);
-                    contact.New_group = newGroup.Name;
+                    contactData.New_group = newGroup.Name;
                 }
                 else
                 {
-                    contact.New_group = groups.Random().Text;
+                    contactData.New_group = groups.Random().Text;
                 }
             }
             Manager
               .Navigate.AddNewContact()
-              .Contacts.AddContactFillFields(contact)
+              .Contacts.AddContactFillFields(contactData)
               .Contacts.PressAddContactApply();
+
+            Assert.NotNull(ContactExistInList(contactData));
         }
 
         public void EditContact(CreateContactData contactData)
@@ -154,6 +156,19 @@ namespace AddressBookAutotests.Controllers
                    .Contacts.PressEdit(contacts.Random())
                    .Contacts.AddContactFillFields(contactData)
                    .Contacts.PressUpdate();
+
+            Assert.NotNull(ContactExistInList(contactData));
+        }
+
+        private ReturnedContact? ContactExistInList(CreateContactData contactData)
+        {
+            return Manager
+                    .Navigate.HomePage()
+                    .Contacts.GetList()
+                    .Contacts.CachedList.Where(x =>
+                    (x.FirstName == contactData.Firstname || contactData.Firstname == null) &&
+                    (x.FirstName == contactData.Firstname || contactData.Firstname == null) &&
+                    (x.FirstName == contactData.Firstname || contactData.Firstname == null)).FirstOrDefault();
         }
 
         public void EditContact()
