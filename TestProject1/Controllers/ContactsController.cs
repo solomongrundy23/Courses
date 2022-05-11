@@ -1,12 +1,27 @@
 ﻿using OpenQA.Selenium;
-using OpenQA.Selenium.Support.UI;
 using AddressBookAutotests.Models;
+using System;
 
 namespace AddressBookAutotests.Controllers
 {
     public class ContactsController : BaseController
     {
-        public ReturnedContacts CachedList { get; private set; } = new ReturnedContacts();
+        public ReturnedContacts? ContactList
+        {
+            get
+            {
+                Manager.Navigate.Contacts().Contacts.OpenList();
+                return _contactList;
+            }
+        }
+
+        private ReturnedContacts? _contactList;
+
+        ~ContactsController()
+        {
+            _contactList = null;
+        }
+
         public ContactsController(ControllersManager manager) : base(manager) { }
 
         public ControllersManager AddContactFillFields(CreateContactData contact)
@@ -52,7 +67,7 @@ namespace AddressBookAutotests.Controllers
             return Manager;
         }
 
-        public ControllersManager GetList()
+        public ControllersManager OpenList()
         {
             Driver.FindElement(By.XPath("//*[@id='nav']/ul/li[1]/a")).Click();
             var contactsRows = Driver.FindElements(By.Name("entry"));
@@ -64,11 +79,12 @@ namespace AddressBookAutotests.Controllers
                 string firstName = contact.FindElement(By.XPath("td[3]")).Text;
                 string address = contact.FindElement(By.XPath("td[4]")).Text;
                 IWebElement edit = contact.FindElement(By.XPath("td[8]/a/img"));
+
                 tempList.Add(
                     new ReturnedContact(checkBox, lastName, firstName, address, edit)
                     );
             }
-            CachedList = tempList;
+            _contactList = tempList;
             return Manager;
         }
         

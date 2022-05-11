@@ -7,12 +7,12 @@ namespace AddressBookAutotests.DataSets
     {
         public static IEnumerable<CreateGroupData> CreateGroupDatas()
         {
-            for (int i = 0; i < 10; i++) yield return CreateGroupData.Random();
+            for (int i = 0; i < 3; i++) yield return CreateGroupData.Random();
         }
 
         public static IEnumerable<CreateContactData> CreateContactDatas()
         {
-            for (int i = 0; i < 10; i++) yield return CreateContactData.Random();
+            for (int i = 0; i < 3; i++) yield return CreateContactData.Random();
         }
     }
 }

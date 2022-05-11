@@ -14,7 +14,7 @@ namespace AddressBookAutotests.Controllers
             return Manager;
         }
 
-        public ControllersManager HomePage()
+        public ControllersManager Contacts()
         {
             Driver.FindElement(By.XPath("//*[@id='nav']/ul/li[1]/a")).Click();
             return Manager;
@@ -26,7 +26,7 @@ namespace AddressBookAutotests.Controllers
             return Manager;
         }
 
-        public ControllersManager ToGroups()
+        public ControllersManager Groups()
         {
             if (Driver.Url == ControllersSettings.BaseUrl + "/addressbook/group.php")
                 if (ExistsElement("new") || !Manager.Groups.GroupIsCreated())

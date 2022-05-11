@@ -18,7 +18,7 @@ namespace AddressBookAutotests.Controllers
             return _managers.Value ?? throw new ArgumentNullException("Thread values == null");
         }
 
-        public IWebDriver Driver { get; private set; }
+        public ChromeDriver Driver { get; private set; }
 
         private ControllersManager()
         {
@@ -44,6 +44,15 @@ namespace AddressBookAutotests.Controllers
         {
             DestroyManager();
         }
+
+        public event EventHandler BrowserUpdated;
+
+        protected virtual void OnBrowserUpdated(EventArgs e)
+        {
+            EventHandler handler = BrowserUpdated;
+            handler?.Invoke(this, e);
+        }
+
 
         private void DestroyManager()
         {

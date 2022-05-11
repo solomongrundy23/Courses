@@ -9,7 +9,23 @@ namespace AddressBookAutotests.Controllers
 {
     public class GroupsControllers : BaseController
     {
-        public ReturnedGroups CachedList { get; private set; } = new ReturnedGroups();
+
+        public ReturnedGroups? GroupList
+        {
+            get
+            {
+                Manager.Navigate.Groups().Groups.OpenList();
+                return _groupList;
+            }
+        }
+
+        private ReturnedGroups? _groupList;
+
+        ~GroupsControllers()
+        {
+            _groupList = null;
+        }
+
         public GroupsControllers(ControllersManager manager) : base(manager) { }
 
         public ControllersManager FillFields(CreateGroupData group)
@@ -32,7 +48,7 @@ namespace AddressBookAutotests.Controllers
             return Manager;
         }
 
-        public ControllersManager GetList()
+        public ControllersManager OpenList()
         {
             var groups = new ReturnedGroups();
             var groupElements = Driver.FindElements(By.ClassName("group"));
@@ -41,20 +57,20 @@ namespace AddressBookAutotests.Controllers
                 var checkBox = groupElement.FindElement(By.TagName("input"));
                 groups.Add(checkBox, checkBox.GetAttribute("value"), groupElement.Text);
             }
-            CachedList = groups;
+            _groupList = groups;
             return Manager;
         }
 
         public ControllersManager SelectByValue(string value)
         {
-            var elements = CachedList.Where(x => x.Value == value).Select(x => x.WebElement);
+            var elements = GroupList.Where(x => x.Value == value).Select(x => x.WebElement);
             CollectionClicker(elements);
             return Manager;
         }
 
         public ControllersManager SelectByName(string name)
         {
-            var elements = CachedList.Where(x => x.Text == name).Select(x => x.WebElement);
+            var elements = GroupList.Where(x => x.Text == name).Select(x => x.WebElement);
             CollectionClicker(elements);
             return Manager;
         }

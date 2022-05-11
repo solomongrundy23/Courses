@@ -3,6 +3,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace AddressBookAutotests.Controllers
 {
@@ -29,50 +30,52 @@ namespace AddressBookAutotests.Controllers
         {
             Assert.IsTrue(
             Manager
-                .Navigate.ToGroups()
+                .Navigate.Groups()
                 .Navigate.AddNewGroup()
                     .Groups.FillFields(group)
                     .Groups.PressSubmit()
                     .Groups.GroupIsCreated()
             );
 
-            var groupsList =
-            Manager
-                .Navigate.ToGroups()
-                .Groups.GetList()
-                .Groups.CachedList;
-            Assert.NotNull(groupsList.FindFirst(group.Name));
+            var groupsList = Manager.Groups.GroupList;
+            Assert.NotNull(groupsList?.FindFirst(group.Name));
+        }
+
+        private ReturnedGroups IfGroupsIsEmptyCreate()
+        {
+            var groups = Manager.Groups.GroupList;
+            if (groups.Count == 0)
+            {
+                AddGroup();
+                groups = Manager.Groups.GroupList;
+            }
+            return groups;
+        }
+
+        private ReturnedContacts IfContactsIsEmptyCreate()
+        {
+            IfGroupsIsEmptyCreate();
+            var contacts = Manager.Contacts.ContactList;
+            if (contacts.Count == 0)
+            {
+                AddNewContact(true);
+                contacts = Manager.Contacts.ContactList;
+            }
+            return contacts;
         }
 
         public void RemoveGroup()
         {
-            var groups = Manager
-                .Navigate.ToGroups()
-                .Groups.GetList()
-                .Groups.CachedList;
-            if (groups.Count == 0)
-            {
-                AddGroup();
-                groups = Manager
-                    .Navigate.ToGroups()
-                    .Groups.GetList()
-                    .Groups.CachedList;
-            }
-
+            var groups = IfGroupsIsEmptyCreate();
             var removedGroup = groups.Random().Text;
 
             Manager
                 .Groups.SelectByName(removedGroup)
                 .Groups.PressRemove();
 
-            groups = Manager
-                        .Navigate.ToGroups()
-                        .Groups.GetList()
-                        .Groups.CachedList;
-
-            groups.RemoveAll(x => x.Equals(removedGroup));
+            groups.RemoveAll(x => x.Text == removedGroup);
             groups.Sort();
-            var actual = Manager.Groups.GetList().Groups.CachedList;
+            var actual = Manager.Groups.GroupList;
             actual.Sort();
             Assert.AreEqual(groups, actual);
         }
@@ -80,18 +83,7 @@ namespace AddressBookAutotests.Controllers
         public void EditGroup()
         {
             var group = CreateGroupData.Random();
-            var groups = Manager
-                .Navigate.ToGroups()
-                .Groups.GetList()
-                .Groups.CachedList;
-            if (groups.Count == 0)
-            {
-                AddGroup(CreateGroupData.Random());
-                groups = Manager
-                    .Navigate.ToGroups()
-                    .Groups.GetList()
-                    .Groups.CachedList;
-            }
+            var groups = IfGroupsIsEmptyCreate();
             Manager
                    .Groups.SelectByName(groups.Random().Text)
                    .Groups.PressEdit()
@@ -104,71 +96,34 @@ namespace AddressBookAutotests.Controllers
             contactData ??= CreateContactData.Random();
             if (group)
             {
-                var groups = Manager
-                    .Navigate.ToGroups()
-                    .Groups.GetList()
-                    .Groups.CachedList;
-                if (groups.Count == 0)
-                {
-                    var newGroup = CreateGroupData.Random();
-                    AddGroup(newGroup);
-                    contactData.New_group = newGroup.Name;
-                }
-                else
-                {
-                    contactData.New_group = groups.Random().Text;
-                }
+                var groups = IfGroupsIsEmptyCreate();
+                contactData.New_group = groups.Random().Text;
             }
             Manager
               .Navigate.AddNewContact()
               .Contacts.AddContactFillFields(contactData)
               .Contacts.PressAddContactApply();
 
-            Assert.NotNull(ContactExistInList(contactData));
+            Assert.IsTrue(ContactExistInList(contactData));
         }
 
         public void EditContact(CreateContactData contactData)
         {
-            var groups = Manager
-                .Navigate.ToGroups()
-                .Groups.GetList()
-                .Groups.CachedList;
-            if (groups.Count == 0)
-            {
-                AddGroup(CreateGroupData.Random());
-                Manager
-                    .Navigate.ToGroups()
-                    .Groups.GetList();
-            }
-            var contacts = Manager
-                .Navigate.HomePage()
-                .Contacts.GetList()
-                .Contacts.CachedList;
-            if (contacts.Count == 0)
-            {
-                AddNewContact(true);
-                contacts = Manager
-                    .Navigate.HomePage()
-                    .Contacts.GetList()
-                    .Contacts.CachedList;
-            }
             Manager
-                   .Contacts.PressEdit(contacts.Random())
+                   .Contacts.PressEdit(Manager.Contacts.ContactList.Random())
                    .Contacts.AddContactFillFields(contactData)
                    .Contacts.PressUpdate();
 
-            Assert.NotNull(ContactExistInList(contactData));
+            Assert.IsTrue(ContactExistInList(contactData));
         }
 
-        private ReturnedContact? ContactExistInList(CreateContactData contactData)
+        private bool ContactExistInList(CreateContactData contactData)
         {
-            return Manager
-                    .Navigate.HomePage()
-                    .Contacts.GetList()
-                    .Contacts.CachedList.Where(x =>
+            return Manager.Contacts.ContactList.Where(x =>
                     (x.FirstName == contactData.Firstname || contactData.Firstname == null) &&
-                    (x.FirstName == contactData.Firstname || contactData.Firstname == null) &&
-                    (x.FirstName == contactData.Firstname || contactData.Firstname == null)).FirstOrDefault();
+                    (x.LastName == contactData.Lastname || contactData.Lastname == null) &&
+                    (x.Address == contactData.Address || contactData.Address == null)
+                    ).FirstOrDefault() != null;
         }
 
         public void EditContact()
@@ -183,25 +138,13 @@ namespace AddressBookAutotests.Controllers
 
         public void RemoveContact(bool fromEditor)
         {
-            if (
-                Manager
-                .Navigate.HomePage()
-                .Contacts.GetList()
-                .Contacts.CachedList.Count() == 0
-                )
-            {
-                AddNewContact(true);
-            }
-            var contacts = Manager
-                .Sleep(2)
-                .Navigate.HomePage()
-                .Contacts.GetList()
-                .Contacts.CachedList;
+            var contacts = IfContactsIsEmptyCreate();
 
             var contact = contacts.Random();
             if (fromEditor)
             {
-                Manager.Contacts.PressEdit(contact)
+                Manager
+                       .Contacts.PressEdit(contact)
                        .Contacts.PressDeleteFromEdtior();
             }
             else
@@ -212,7 +155,7 @@ namespace AddressBookAutotests.Controllers
 
             contacts.RemoveAll(x => x.Equals(contact));
             contacts.Sort();
-            var actual = Manager.Contacts.GetList().Contacts.CachedList;
+            var actual = Manager.Contacts.ContactList;
             actual.Sort();
             Assert.AreEqual(contacts, actual);
         }
