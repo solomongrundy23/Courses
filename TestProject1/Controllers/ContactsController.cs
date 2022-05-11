@@ -1,6 +1,8 @@
 ﻿using OpenQA.Selenium;
 using AddressBookAutotests.Models;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace AddressBookAutotests.Controllers
 {
@@ -79,15 +81,28 @@ namespace AddressBookAutotests.Controllers
                 string firstName = contact.FindElement(By.XPath("td[3]")).Text;
                 string address = contact.FindElement(By.XPath("td[4]")).Text;
                 IWebElement edit = contact.FindElement(By.XPath("td[8]/a/img"));
+                List<string> email = GetEmails(contact);
+
+                List<string> phone = GetPhones(contact);
 
                 tempList.Add(
-                    new ReturnedContact(checkBox, lastName, firstName, address, edit)
+                    new ReturnedContact(checkBox, lastName, firstName, address, edit, email, phone)
                     );
             }
             _contactList = tempList;
             return Manager;
         }
-        
+
+        private List<string> GetEmails(IWebElement contactRow)
+        { 
+            return contactRow.FindElements(By.XPath("td[5]/a")).Select(x => x.Text).ToList();
+        }
+
+        private List<string> GetPhones(IWebElement contactRow)
+        {
+            return contactRow.FindElement(By.XPath("td[6]")).Text.Split(new string[] { Environment.NewLine}, StringSplitOptions.None).ToList();
+        }
+
         public ControllersManager CheckeBoxContact(ReturnedContact contactElement)
         {
             contactElement.CheckBox.Click();

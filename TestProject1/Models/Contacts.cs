@@ -3,6 +3,7 @@ using OpenQA.Selenium;
 using System;
 using System.Collections.Generic;
 using JsonHelper;
+using AddressBookAutotests.Helpers;
 
 namespace AddressBookAutotests.Models
 {
@@ -11,19 +12,25 @@ namespace AddressBookAutotests.Models
         public IWebElement CheckBox { get; set; }
         public string LastName { get; set; }
         public string FirstName { get; set; }
+        public List<string> Email { get; set; }
+        public List<string> Phone { get; set; }
         public string Address { get; set; }
+
         public IWebElement Edit { get; set; }
 
-        public ReturnedContact(IWebElement checkBox, string lastName, string firstName, string address, IWebElement edit)
+        public ReturnedContact(IWebElement checkBox, string lastName, string firstName, string address, IWebElement edit, List<string> email, List<string> phone)
         { 
             CheckBox = checkBox;
             LastName = lastName;
             FirstName = firstName;
             Address = address;
+            Email = email;
+            Phone = phone;
             Edit = edit;
         }
 
-        public override string ToString() => $"{LastName} {FirstName} {Address}";
+        public override string ToString() => $"LastName: {LastName}\r\nFirstName: {FirstName}\r\n" +
+            $"Address: {Address}\r\nPhones: {string.Join(Environment.NewLine, Phone)}\r\nEmails: {string.Join(Environment.NewLine, Email)}";
 
         public int CompareTo(ReturnedContact? other)
         {
@@ -158,6 +165,31 @@ namespace AddressBookAutotests.Models
             Theform = theform;
             Title = title;
             Work = work;
+        }
+
+        public List<string> GetPhones()
+        {
+            var result = new List<string>
+            {
+                Home.DigitsOnly(),
+                Mobile.DigitsOnly(),
+                Phone2.DigitsOnly(),
+                Work.DigitsOnly()
+            };
+            result.Remove(null);
+            return result;
+        }
+
+        public List<string> GetMails()
+        {
+            var result = new List<string>
+            {
+                Email,
+                Email2,
+                Email3
+            };
+            result.Remove(null);
+            return result;
         }
 
         public static CreateContactData Random(bool fioIsNull = false)

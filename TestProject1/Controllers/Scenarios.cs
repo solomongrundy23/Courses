@@ -119,10 +119,17 @@ namespace AddressBookAutotests.Controllers
 
         private bool ContactExistInList(CreateContactData contactData)
         {
-            return Manager.Contacts.ContactList.Where(x =>
+            var contacts = Manager.Contacts.ContactList;
+            var mails = contactData.GetMails();
+            mails.Sort();
+            var phones = contactData.GetPhones();
+            phones.Sort();
+            return contacts.Where(x =>
                     (x.FirstName == contactData.Firstname || contactData.Firstname == null) &&
                     (x.LastName == contactData.Lastname || contactData.Lastname == null) &&
-                    (x.Address == contactData.Address || contactData.Address == null)
+                    (x.Address == contactData.Address || contactData.Address == null) &&
+                    x.Email.OrderBy(x => x).SequenceEqual(mails) &&
+                    x.Phone.OrderBy(x => x).SequenceEqual(phones)
                     ).FirstOrDefault() != null;
         }
 
