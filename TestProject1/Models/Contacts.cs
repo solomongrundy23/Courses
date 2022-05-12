@@ -4,21 +4,32 @@ using System;
 using System.Collections.Generic;
 using JsonHelper;
 using AddressBookAutotests.Helpers;
+using System.Linq;
 
 namespace AddressBookAutotests.Models
 {
     public class ReturnedContact : IEquatable<ReturnedContact>, IComparable<ReturnedContact>
     {
-        public IWebElement CheckBox { get; set; }
-        public string LastName { get; set; }
-        public string FirstName { get; set; }
-        public List<string> Email { get; set; }
-        public List<string> Phone { get; set; }
-        public string Address { get; set; }
+        public IWebElement? CheckBox { get; set; }
+        public string? LastName { get; set; }
+        public string? FirstName { get; set; }
+        public List<string>? Email { get; set; }
+        public List<string>? Phone { get; set; }
+        public string? Address { get; set; }
+        public IWebElement? Edit { get; set; }
+        public IWebElement? Details { get; set; }
 
-        public IWebElement Edit { get; set; }
+        public ReturnedContact() { }
 
-        public ReturnedContact(IWebElement checkBox, string lastName, string firstName, string address, IWebElement edit, List<string> email, List<string> phone)
+        public ReturnedContact(
+            IWebElement checkBox, 
+            string lastName, 
+            string firstName, 
+            string address, 
+            IWebElement edit, 
+            List<string> email, 
+            List<string> phone, 
+            IWebElement details)
         { 
             CheckBox = checkBox;
             LastName = lastName;
@@ -27,6 +38,7 @@ namespace AddressBookAutotests.Models
             Email = email;
             Phone = phone;
             Edit = edit;
+            Details = details;
         }
 
         public override string ToString() => $"LastName: {LastName}\r\nFirstName: {FirstName}\r\n" +
@@ -50,7 +62,9 @@ namespace AddressBookAutotests.Models
             if (ReferenceEquals(this, other)) return true;
             return other?.LastName == LastName &&
                    other?.FirstName == FirstName &&
-                   other?.Address == Address;
+                   other?.Address == Address &&
+                   Phone.SequenceEqual(other?.Phone) &&
+                   Email.SequenceEqual(other?.Email);
         }
 
         public override int GetHashCode()

@@ -133,14 +133,29 @@ namespace AddressBookAutotests.Controllers
                     ).FirstOrDefault() != null;
         }
 
+        public void VerifyContactTableAndEdition()
+        {
+            var contactTable = IfContactsIsEmptyCreate().Random();
+            var contactEdition = Manager.Contacts.GetContactFromEditor(contactTable);
+            Assert.AreEqual(contactEdition.FirstName, contactTable.FirstName);
+        }
+
         public void EditContact()
-        { 
+        {
             EditContact(CreateContactData.Random(false));
         }
 
         public void EditContactFIONotChange()
         { 
             EditContact(CreateContactData.Random(true));
+        }
+
+        public void Details()
+        {
+            var contact = IfContactsIsEmptyCreate().Random();
+            var details = Manager.Contacts.GetDetailsText(contact);
+            var contactDetails = Manager.Contacts.FromEditiorToDetails(Manager.Contacts.FindContactInContactTableWithUpdateLinks(contact));
+            Assert.AreEqual(contactDetails, details);
         }
 
         public void RemoveContact(bool fromEditor)

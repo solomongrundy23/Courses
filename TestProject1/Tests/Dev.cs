@@ -11,38 +11,15 @@ using OpenQA.Selenium.Firefox;
 namespace AddressBookAutotests.Dev
 {
     [TestFixture()]
-    public class DevTest
+    public class DevTest : AddressBookAutotests.Tests.TestWithAuth
     {
-        private ControllersManager? _manager;
-        private ControllersManager Manager
-        {
-            get { if (_manager == null) throw new NullReferenceException("Manager is null"); else return _manager; }
-            set { _manager = value; }
-        }
-
-        [TearDown]
-        public void TeardownTest()
-        {
-            try
-            {
-
-            }
-            catch (Exception)
-            {
-            }
-        }
-
-        [SetUp]
-        public void Method()
-        {
-            Manager = ControllersManager.GetInstance();
-        }
-
         [Test]
         [Description("")]
         public void Test()
         {
-            Method();
+            var cs = Manager.Contacts.ContactList;
+            foreach (var contact in cs) contact.CheckBox.Click();
+            Manager.Contacts.PressDelete();
         }
     }
 }

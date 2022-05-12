@@ -17,5 +17,15 @@ namespace AddressBookAutotests.Helpers
             }
             return result;
         }
+
+        public static string FirstLetterToUpperCase(this string s)
+        {
+            if (string.IsNullOrEmpty(s)) return s;
+            char firstChar = s[0];
+            if (s.Length > 1)
+                return firstChar + s.Substring(1);
+            else
+                return firstChar.ToString();
+        }
     }
 }

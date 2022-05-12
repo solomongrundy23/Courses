@@ -28,6 +28,16 @@ namespace AddressBookAutotests.Controllers
             FillTextBox(By.Name(name), value);
         }
 
+        protected string GetTextBoxValue(By location)
+        { 
+            return Driver.FindElement(location).GetAttribute("value");
+        }
+
+        protected string GetTextBoxValue(string name)
+        {
+            return GetTextBoxValue(By.Name(name));
+        }
+
         protected void SelectElementInComboBox(By location, string? value)
         {
             if (value == null) return;

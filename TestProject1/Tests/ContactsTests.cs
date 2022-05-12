@@ -40,7 +40,23 @@ namespace AddressBookAutotests.Tests
         }
 
         [Test]
+        [Order(3)]
+        [Description("Contact editor verification")]
+        public void VerifyContactTableAndEdition()
+        {
+            Manager.Scenarios.VerifyContactTableAndEdition();
+        }
+
+        [Test]
         [Order(4)]
+        [Description("Contact details verification")]
+        public void VerifyContactTableAndDetails()
+        {
+            Manager.Scenarios.Details();
+        }
+
+        [Test]
+        [Order(5)]
         [Description("Remove contact from contacts page")]
         public void RemoveContactTestFromContacts()
         {
@@ -48,7 +64,7 @@ namespace AddressBookAutotests.Tests
         }
 
         [Test]
-        [Order(5)]
+        [Order(6)]
         [Description("Remove contact from contact's editor")]
         public void RemoveContactTestFromEditor()
         {
