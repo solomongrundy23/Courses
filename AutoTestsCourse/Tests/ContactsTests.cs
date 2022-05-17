@@ -7,15 +7,39 @@ namespace AddressBookAutotests.Tests
     [TestFixture]
     public class ContactsTests : TestWithAuth
     {
-        [Test, TestCaseSource(typeof(DataProvider), nameof(DataProvider.CreateContactDatas))]
+        [Test, TestCaseSource(typeof(DataProviderAutoGenerator), nameof(DataProviderAutoGenerator.CreateContactDatas))]
         [Order(1)]
-        [Description("Add contact without group")]
+        [Description("Add new contact without group")]
         public void AddNewContactWithoutGroupTest(CreateContactData contactData)
         {
             Manager.Scenarios.AddNewContact(false, contactData);
         }
 
-        [Test, TestCaseSource(typeof(DataProvider), nameof(DataProvider.CreateContactDatas))]
+        [Test, TestCaseSource(typeof(DataProviderFromFile), nameof(DataProviderFromFile.CreatContactDatasFromCSV))]
+        [Order(1)]
+        [Description("Add new contact from CSV")]
+        public void AddNewContactWithoutGroupTestCsv(CreateContactData contactData)
+        {
+            Manager.Scenarios.AddNewContact(false, contactData);
+        }
+
+        [Test, TestCaseSource(typeof(DataProviderFromFile), nameof(DataProviderFromFile.CreateContactDatasFromXML))]
+        [Order(1)]
+        [Description("Add new contact from XML")]
+        public void AddNewContactWithoutGroupTestXml(CreateContactData contactData)
+        {
+            Manager.Scenarios.AddNewContact(false, contactData);
+        }
+
+        [Test, TestCaseSource(typeof(DataProviderFromFile), nameof(DataProviderFromFile.CreateContactDatasFromJson))]
+        [Order(1)]
+        [Description("Add new contact from JSON")]
+        public void AddNewContactWithoutGroupTestJson(CreateContactData contactData)
+        {
+            Manager.Scenarios.AddNewContact(false, contactData);
+        }
+
+        [Test, TestCaseSource(typeof(DataProviderAutoGenerator), nameof(DataProviderAutoGenerator.CreateContactDatas))]
         [Order(2)]
         [Description("Add contact with group")]
         public void AddNewContactTest(CreateContactData contactData)

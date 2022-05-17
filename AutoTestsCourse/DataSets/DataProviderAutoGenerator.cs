@@ -1,11 +1,9 @@
 ﻿using AddressBookAutotests.Models;
-using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
 using System.Collections.Generic;
 
 namespace AddressBookAutotests.DataSets
 {
-    public static class DataProvider
+    public static class DataProviderAutoGenerator
     {
         public static IEnumerable<CreateGroupData> CreateGroupDatas()
         {

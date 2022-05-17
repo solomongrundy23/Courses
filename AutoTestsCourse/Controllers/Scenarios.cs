@@ -41,40 +41,36 @@ namespace AddressBookAutotests.Controllers
             Assert.NotNull(groupsList?.FindFirst(group.Name));
         }
 
-        private ReturnedGroups IfGroupsIsEmptyCreate()
+        private Groups IfGroupsIsEmptyCreate()
         {
-            var groups = Manager.Groups.GroupList;
-            if (groups.Count == 0)
+            if (Manager.Groups.GroupList.Count == 0)
             {
                 AddGroup();
-                groups = Manager.Groups.GroupList;
             }
-            return groups;
+            return Manager.Groups.GroupList;
         }
 
-        private ReturnedContacts IfContactsIsEmptyCreate()
+        private ContactList IfContactsIsEmptyCreate()
         {
             IfGroupsIsEmptyCreate();
-            var contacts = Manager.Contacts.ContactList;
-            if (contacts.Count == 0)
+            if (Manager.Contacts.ContactList.Count == 0)
             {
                 AddNewContact(true);
-                contacts = Manager.Contacts.ContactList;
             }
-            return contacts;
+            return Manager.Contacts.ContactList;
         }
 
         public void RemoveGroup()
         {
             var groups = IfGroupsIsEmptyCreate();
-            var removedGroup = groups.Random().Text;
+            var removedGroup = groups.Random();
 
             Manager
-                .Groups.SelectByName(removedGroup)
+                .Groups.CheckBoxClick(removedGroup)
                 .Groups.PressRemove();
 
-            groups.RemoveAll(x => x.Text == removedGroup);
             groups.Sort();
+            groups.Remove(groups.Where(x => x.Name == removedGroup.Name).First());
             var actual = Manager.Groups.GroupList;
             actual.Sort();
             Assert.AreEqual(groups, actual);
@@ -85,19 +81,19 @@ namespace AddressBookAutotests.Controllers
             var group = CreateGroupData.Random();
             var groups = IfGroupsIsEmptyCreate();
             Manager
-                   .Groups.SelectByName(groups.Random().Text)
+                   .Groups.CheckBoxClick(groups.Random())
                    .Groups.PressEdit()
                    .Groups.FillFields(group)
                    .Groups.PressUpdate();
         }
 
-        public void AddNewContact(bool group, CreateContactData? contactData = null)
+        public void AddNewContact(bool group, CreateContactData contactData = null)
         {
-            contactData ??= CreateContactData.Random();
+            if (contactData == null) contactData = CreateContactData.Random();
             if (group)
             {
                 var groups = IfGroupsIsEmptyCreate();
-                contactData.New_group = groups.Random().Text;
+                contactData.New_group = groups.Random().Name;
             }
             Manager
               .Navigate.AddNewContact()
@@ -124,20 +120,22 @@ namespace AddressBookAutotests.Controllers
             mails.Sort();
             var phones = contactData.GetPhones();
             phones.Sort();
-            return contacts.Where(x =>
+            foreach (var x in contacts) 
+                if (
                     (x.FirstName == contactData.Firstname || contactData.Firstname == null) &&
                     (x.LastName == contactData.Lastname || contactData.Lastname == null) &&
                     (x.Address == contactData.Address || contactData.Address == null) &&
-                    x.Email.OrderBy(x => x).SequenceEqual(mails) &&
-                    x.Phone.OrderBy(x => x).SequenceEqual(phones)
-                    ).FirstOrDefault() != null;
+                    x.Emails.OrderBy(y => y).SequenceEqual(mails) &&
+                    x.Phones.OrderBy(y => y).SequenceEqual(phones))
+                    return true;
+            return false;
         }
 
         public void VerifyContactTableAndEdition()
         {
             var contactTable = IfContactsIsEmptyCreate().Random();
             var contactEdition = Manager.Contacts.GetContactFromEditor(contactTable);
-            Assert.AreEqual(contactEdition.FirstName, contactTable.FirstName);
+            Assert.AreEqual(contactEdition, contactTable);
         }
 
         public void EditContact()
@@ -154,7 +152,7 @@ namespace AddressBookAutotests.Controllers
         {
             var contact = IfContactsIsEmptyCreate().Random();
             var details = Manager.Contacts.GetDetailsText(contact);
-            var contactDetails = Manager.Contacts.FromEditiorToDetails(Manager.Contacts.FindContactInContactTableWithUpdateLinks(contact));
+            var contactDetails = Manager.Contacts.FromEditiorToDetails(contact);
             Assert.AreEqual(contactDetails, details);
         }
 
@@ -171,8 +169,8 @@ namespace AddressBookAutotests.Controllers
             }
             else
             {
-                Manager.Contacts.CheckeBoxContact(contact)
-                       .Contacts.PressDelete();
+                Manager.Contacts.CheckeBoxContactClick(contact)
+                       .Contacts.PressRemove();
             }
 
             contacts.RemoveAll(x => x.Equals(contact));

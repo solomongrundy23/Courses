@@ -15,7 +15,7 @@ namespace AddressBookAutotests.Controllers
             Manager = manager;
         }
 
-        protected void FillTextBox(By location, string? value)
+        protected void FillTextBox(By location, string value)
         {
             if (value == null) return;
             Driver.FindElement(location).Click();
@@ -23,7 +23,7 @@ namespace AddressBookAutotests.Controllers
             Driver.FindElement(location).SendKeys(value);
         }
 
-        protected void FillTextBox(string name, string? value)
+        protected void FillTextBox(string name, string value)
         {
             FillTextBox(By.Name(name), value);
         }
@@ -38,9 +38,9 @@ namespace AddressBookAutotests.Controllers
             return GetTextBoxValue(By.Name(name));
         }
 
-        protected void SelectElementInComboBox(By location, string? value)
+        protected void SelectElementInComboBox(By location, string value)
         {
-            if (value == null) return;
+            if (string.IsNullOrEmpty(value)) return;
             Driver.FindElement(location).Click();
             new SelectElement(Driver.FindElement(location)).SelectByText(value);
         }
@@ -50,7 +50,7 @@ namespace AddressBookAutotests.Controllers
             foreach (var element in elements) element.Click();
         }
 
-        protected void SelectElementInComboBox(string name, string? value)
+        protected void SelectElementInComboBox(string name, string value)
         {
             SelectElementInComboBox(By.Name(name), value);
         }

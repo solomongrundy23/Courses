@@ -14,12 +14,16 @@ namespace AddressBookAutotests.Dev
     public class DevTest : AddressBookAutotests.Tests.TestWithAuth
     {
         [Test]
-        [Description("")]
+        [Description("Develop")]
         public void Test()
         {
-            var cs = Manager.Contacts.ContactList;
-            foreach (var contact in cs) contact.CheckBox.Click();
-            Manager.Contacts.PressDelete();
+            var cs = Manager.Contacts.GetList();
+            foreach (var contact in cs) Manager.Contacts.CheckeBoxClick(contact);
+            Manager.Contacts.PressRemove();
+
+            var gs = Manager.Groups.GetList();
+            for (int i = 0; i < gs.Count; i += 1) Manager.Groups.CheckBoxClick(gs[i]);
+            Manager.Groups.PressRemove();
         }
     }
 }

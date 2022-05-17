@@ -10,16 +10,18 @@ namespace AddressBookAutotests.Controllers
     public class GroupsControllers : BaseController
     {
 
-        public ReturnedGroups? GroupList
+        public Groups GroupList
         {
             get
             {
-                Manager.Navigate.Groups().Groups.OpenList();
+                if (_groupList == null || _groupListChanded) Manager.Navigate.Groups().Groups.GetList();
                 return _groupList;
             }
         }
 
-        private ReturnedGroups? _groupList;
+        private Groups _groupList;
+        private bool _groupListChanded;
+        private void GroupsChanged() => _groupListChanded = true;
 
         ~GroupsControllers()
         {
@@ -39,55 +41,44 @@ namespace AddressBookAutotests.Controllers
         public ControllersManager PressSubmit()
         {
             Driver.FindElement(By.Name("submit")).Click();
+            GroupsChanged();
             return Manager;
         }
 
         public ControllersManager PressUpdate()
         {
             Driver.FindElement(By.Name("update")).Click();
+            GroupsChanged();
             return Manager;
         }
 
-        public ControllersManager OpenList()
+        public ReadOnlyCollection<IWebElement> GetList()
         {
-            var groups = new ReturnedGroups();
+            Manager.Navigate.Groups();
+            var groups = new Groups();
             var groupElements = Driver.FindElements(By.ClassName("group"));
             foreach (var groupElement in groupElements)
             {
-                var checkBox = groupElement.FindElement(By.TagName("input"));
-                groups.Add(checkBox, checkBox.GetAttribute("value"), groupElement.Text);
+                groups.Add(groupElement.Text);
             }
             _groupList = groups;
+            return groupElements;
+        }
+
+        public IWebElement GetGroupElement(Group group)
+        {
+            return GetList().Where(x => x.Text == group.Name).FirstOrDefault() ?? throw new Exception("Group not found");
+        }
+
+        public ControllersManager CheckBoxClick(Group group)
+        {
+            CheckBoxClick(GetGroupElement(group));
             return Manager;
         }
 
-        public ControllersManager SelectByValue(string value)
+        public void CheckBoxClick(IWebElement groupElement)
         {
-            var elements = GroupList.Where(x => x.Value == value).Select(x => x.WebElement);
-            CollectionClicker(elements);
-            return Manager;
-        }
-
-        public ControllersManager SelectByName(string name)
-        {
-            var elements = GroupList.Where(x => x.Text == name).Select(x => x.WebElement);
-            CollectionClicker(elements);
-            return Manager;
-        }
-
-        private void CollectionClicker(ICollection<IWebElement> elements)
-        {
-            CollectionClicker(elements.Select(x => x));
-        }
-
-        private void CollectionClicker(IEnumerable<IWebElement> elements)
-        {
-            foreach (var element in elements) element.Click();
-        }
-
-        private ReadOnlyCollection<IWebElement> GetGroupsElements()
-        {
-            return Driver.FindElements(By.Name("selected[]"));
+            groupElement.FindElement(By.TagName("input")).Click();
         }
 
         public bool GroupIsCreated()
@@ -106,6 +97,7 @@ namespace AddressBookAutotests.Controllers
         public ControllersManager PressRemove()
         {
             Driver.FindElement(By.Name("delete")).Click();
+            GroupsChanged();
             return Manager;
         }
 

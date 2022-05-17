@@ -1,4 +1,5 @@
 ﻿using AddressBookAutotests.Controllers;
+using JsonHelper;
 using NUnit.Framework;
 using System;
 
@@ -10,12 +11,19 @@ namespace AddressBookAutotests.Tests
         {
             get
             {
+                TestContext.AddFormatter(obj =>
+                {
+                    if (obj == null)
+                        return x => "";
+
+                    return x => x.ToJson(true);
+                });
                 if (_controllersManager == null) throw new NullReferenceException("Manager is null");
                 return _controllersManager;
             }
             private set { _controllersManager = value; }
         }
-        private ControllersManager? _controllersManager;
+        private ControllersManager _controllersManager;
 
         [SetUp]
         public void InitManager()

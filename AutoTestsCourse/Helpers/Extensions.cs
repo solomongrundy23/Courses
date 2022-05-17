@@ -8,6 +8,11 @@ namespace AddressBookAutotests.Helpers
 {
     public static class Extensions
     {
+        public static string CombineParams(string splitter, params string[] paramList)
+        {
+            return string.Join(splitter, paramList.Select(x => x ?? string.Empty));
+        }
+
         public static string DigitsOnly(this string text)
         {
             string result = "";
@@ -18,10 +23,14 @@ namespace AddressBookAutotests.Helpers
             return result;
         }
 
+        public static string AsString<T>(this List<T> list, string splitter = "\r\n") => string.Join(splitter, list);
+        public static string AsString<T>(this IEnumerable<T> list, string splitter = "\r\n") => string.Join(splitter, list);
+
+
         public static string FirstLetterToUpperCase(this string s)
         {
             if (string.IsNullOrEmpty(s)) return s;
-            char firstChar = s[0];
+            var firstChar = s[0].ToString().ToUpper();
             if (s.Length > 1)
                 return firstChar + s.Substring(1);
             else

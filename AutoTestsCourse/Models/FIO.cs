@@ -8,12 +8,16 @@ namespace AddressBookAutotests.Models
     {
         public enum Gender { Man, Woman, All}
         public FIO() { }
-        public static Bogus.DataSets.Name.Gender GenderDataSets(Gender gender) => gender switch
+        public static Bogus.DataSets.Name.Gender GenderDataSets(Gender gender)
         {
-            Gender.Man => Bogus.DataSets.Name.Gender.Male,
-            Gender.Woman => Bogus.DataSets.Name.Gender.Female,
-            _ => (new Random()).Next(1) == 0 ? Bogus.DataSets.Name.Gender.Female : Bogus.DataSets.Name.Gender.Male
-        };
+            switch (gender)
+            {
+                case Gender.Man: return Bogus.DataSets.Name.Gender.Male; break;
+                    case Gender.Woman: return Bogus.DataSets.Name.Gender.Female; break;
+                    default: return (new Random()).Next(1) == 0 ? Bogus.DataSets.Name.Gender.Female : Bogus.DataSets.Name.Gender.Male;
+            }
+        
+        }
 
         public static FIO Random(Gender gender = Gender.All)
         {
@@ -28,7 +32,7 @@ namespace AddressBookAutotests.Models
         }
         private static string GetFatherName(string fatherName, bool isWoman = false)
         {
-            string? result;
+            string result;
             if (fatherName.EndsWith("а"))
                 result = fatherName.Substring(0, fatherName.Length - 1) + (isWoman ? "инична" : "ич");
             else
@@ -41,8 +45,8 @@ namespace AddressBookAutotests.Models
                 result = fatherName + (isWoman ? "овна" : "ович");
             return result;
         }
-        public string? Name { get; set; }
-        public string? FatherName { get; set; }
-        public string? SurName { get; set; }
+        public string Name { get; set; }
+        public string FatherName { get; set; }
+        public string SurName { get; set; }
     }
 }

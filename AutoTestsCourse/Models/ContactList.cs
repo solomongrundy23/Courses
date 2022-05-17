@@ -8,43 +8,34 @@ using System.Linq;
 
 namespace AddressBookAutotests.Models
 {
-    public class ReturnedContact : IEquatable<ReturnedContact>, IComparable<ReturnedContact>
+    public class Contact : IEquatable<Contact>, IComparable<Contact>
     {
-        public IWebElement? CheckBox { get; set; }
-        public string? LastName { get; set; }
-        public string? FirstName { get; set; }
-        public List<string>? Email { get; set; }
-        public List<string>? Phone { get; set; }
-        public string? Address { get; set; }
-        public IWebElement? Edit { get; set; }
-        public IWebElement? Details { get; set; }
+        public string LastName { get; set; }
+        public string FirstName { get; set; }
+        public List<string> Emails { get; set; }
+        public List<string> Phones { get; set; }
+        public string Address { get; set; }
 
-        public ReturnedContact() { }
+        public Contact() { }
 
-        public ReturnedContact(
-            IWebElement checkBox, 
+        public Contact(
             string lastName, 
             string firstName, 
             string address, 
-            IWebElement edit, 
             List<string> email, 
-            List<string> phone, 
-            IWebElement details)
+            List<string> phone)
         { 
-            CheckBox = checkBox;
             LastName = lastName;
             FirstName = firstName;
             Address = address;
-            Email = email;
-            Phone = phone;
-            Edit = edit;
-            Details = details;
+            Emails = email;
+            Phones = phone;
         }
 
         public override string ToString() => $"LastName: {LastName}\r\nFirstName: {FirstName}\r\n" +
-            $"Address: {Address}\r\nPhones: {string.Join(Environment.NewLine, Phone)}\r\nEmails: {string.Join(Environment.NewLine, Email)}";
+            $"Address: {Address}\r\nPhones: {string.Join(Environment.NewLine, Phones)}\r\nEmails: {string.Join(Environment.NewLine, Emails)}";
 
-        public int CompareTo(ReturnedContact? other)
+        public int CompareTo(Contact other)
         {
             int result = string.Compare(this.LastName, other?.LastName);
             if (result == 0)
@@ -56,15 +47,15 @@ namespace AddressBookAutotests.Models
             return result;
         }
 
-        public bool Equals(ReturnedContact? other)
+        public bool Equals(Contact other)
         {
             if (other == null) return false;
             if (ReferenceEquals(this, other)) return true;
             return other?.LastName == LastName &&
                    other?.FirstName == FirstName &&
                    other?.Address == Address &&
-                   Phone.SequenceEqual(other?.Phone) &&
-                   Email.SequenceEqual(other?.Email);
+                   Phones.SequenceEqual(other?.Phones) &&
+                   Emails.SequenceEqual(other?.Emails);
         }
 
         public override int GetHashCode()
@@ -72,17 +63,17 @@ namespace AddressBookAutotests.Models
             return HashCode.Combine(LastName, FirstName, Address);
         }
     }
-    public class ReturnedContacts : List<ReturnedContact>
+    public class ContactList : List<Contact>
     {
         public bool isEmpty => this.Count == 0;
 
-        public ReturnedContact Random()
+        public Contact Random()
         {
             if (this.Count == 0) throw new Exception("ContactsTable is Empty");
             return this[new Random().Next(this.Count - 1)];
         }
 
-        public override bool Equals(object? obj)
+        public override bool Equals(object obj)
         {
             return base.Equals(obj);
         }
@@ -94,32 +85,32 @@ namespace AddressBookAutotests.Models
     }
     public class CreateContactData
     {
-        public string? Aday;
-        public string? Address;
-        public string? Address2;
-        public string? Amonth;
-        public string? Ayear;
-        public string? Bday;
-        public string? Bmonth;
-        public string? Byear;
-        public string? Company;
-        public string? Email;
-        public string? Email2;
-        public string? Email3;
-        public string? Fax;
-        public string? Firstname;
-        public string? Home;
-        public string? Homepage;
-        public string? Lastname;
-        public string? Middlename;
-        public string? Mobile;
-        public string? New_group;
-        public string? Nickname;
-        public string? Notes;
-        public string? Phone2;
-        public string? Theform;
-        public string? Title;
-        public string? Work;
+        public string Aday;
+        public string Address;
+        public string Address2;
+        public string Amonth;
+        public string Ayear;
+        public string Bday;
+        public string Bmonth;
+        public string Byear;
+        public string Company;
+        public string Email;
+        public string Email2;
+        public string Email3;
+        public string Fax;
+        public string Firstname;
+        public string Home;
+        public string Homepage;
+        public string Lastname;
+        public string Middlename;
+        public string Mobile;
+        public string New_group;
+        public string Nickname;
+        public string Notes;
+        public string Phone2;
+        public string Theform;
+        public string Title;
+        public string Work;
 
         //public override string ToString() => this.ToJson();
 
