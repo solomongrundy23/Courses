@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32421.90
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoTestsCourse", "AutoTestsCourse\AutoTestsCourse.csproj", "{C4C01142-72EA-47CD-AC2C-FA961DB37EF6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AddressBookAutotests", "AutoTestsCourse\AddressBookAutotests.csproj", "{C4C01142-72EA-47CD-AC2C-FA961DB37EF6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestDataGenerator", "TestDataGenerator\TestDataGenerator.csproj", "{25580F69-D8F8-4C67-BD2D-C90E20A41926}"
 EndProject

@@ -1,29 +1,42 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
-using AddressBookAutotests.Controllers;
+using System.Linq;
 using AddressBookAutotests.Models;
+using AddressBookAutotests.Helpers;
 using NUnit.Framework;
-using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.Firefox;
 
 namespace AddressBookAutotests.Dev
 {
     [TestFixture()]
-    public class DevTest : AddressBookAutotests.Tests.TestWithAuth
+    public class DevTest : Tests.TestWithAuth
     {
         [Test]
         [Description("Develop")]
         public void Test()
         {
-            var cs = Manager.Contacts.GetList();
-            foreach (var contact in cs) Manager.Contacts.CheckeBoxClick(contact);
-            Manager.Contacts.PressRemove();
+            var FormUI = GetList(() => Manager.Contacts.ContactList);
+            var FromDB = GetList(() =>
+            {
+                using (AddressBookDB db = new AddressBookDB())
+                {
+                    var dbResult = from c in db.contactDatas select c;
+                    var contacts = dbResult.Select(x => new Contact(x)).ToContacts();
+                    return contacts;
+                }
+            });
+            FormUI.Sort();
+            FromDB.Sort();
+            Assert.AreEqual(FormUI, FromDB);
+        }
 
-            var gs = Manager.Groups.GetList();
-            for (int i = 0; i < gs.Count; i += 1) Manager.Groups.CheckBoxClick(gs[i]);
-            Manager.Groups.PressRemove();
+        public Contacts GetList(Func<Contacts> func)
+        {
+            var start = DateTime.Now;
+            var groups = (Contacts)func.Invoke();
+            var stop = DateTime.Now;
+            var remains = stop.Subtract(start).TotalMilliseconds;
+            Console.WriteLine(remains);
+            return groups;
         }
     }
 }

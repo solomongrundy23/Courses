@@ -3,7 +3,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using AddressBookAutotests.Helpers;
 
 namespace AddressBookAutotests.Controllers
 {
@@ -18,15 +18,15 @@ namespace AddressBookAutotests.Controllers
 
         public void AddGroup()
         {
-            AddGroup(CreateGroupData.Random());
+            AddGroup(GroupData.Random());
         }
 
-        public void AddGroup(IEnumerable<CreateGroupData> groupList)
+        public void AddGroup(IEnumerable<GroupData> groupList)
         { 
             foreach (var group in groupList) AddGroup(group);
         }
 
-        public void AddGroup(CreateGroupData group)
+        public void AddGroup(GroupData group)
         {
             Assert.IsTrue(
             Manager
@@ -50,7 +50,7 @@ namespace AddressBookAutotests.Controllers
             return Manager.Groups.GroupList;
         }
 
-        private ContactList IfContactsIsEmptyCreate()
+        private Contacts IfContactsIsEmptyCreate()
         {
             IfGroupsIsEmptyCreate();
             if (Manager.Contacts.ContactList.Count == 0)
@@ -78,7 +78,7 @@ namespace AddressBookAutotests.Controllers
 
         public void EditGroup()
         {
-            var group = CreateGroupData.Random();
+            var group = GroupData.Random();
             var groups = IfGroupsIsEmptyCreate();
             Manager
                    .Groups.CheckBoxClick(groups.Random())
@@ -87,33 +87,51 @@ namespace AddressBookAutotests.Controllers
                    .Groups.PressUpdate();
         }
 
-        public void AddNewContact(bool group, CreateContactData contactData = null)
+        public void AddNewContact(bool group, ContactData contactData = null)
         {
-            if (contactData == null) contactData = CreateContactData.Random();
+            if (contactData == null) contactData = ContactData.Random();
             if (group)
             {
                 var groups = IfGroupsIsEmptyCreate();
                 contactData.New_group = groups.Random().Name;
             }
+            var excepted = new Contacts(Manager.Contacts.ContactList);
+            excepted.Add(new Contact(contactData));
+            excepted.Sort();
             Manager
               .Navigate.AddNewContact()
               .Contacts.AddContactFillFields(contactData)
               .Contacts.PressAddContactApply();
 
-            Assert.IsTrue(ContactExistInList(contactData));
+            Assert.AreEqual(Manager.Contacts.ContactList, excepted);
         }
 
-        public void EditContact(CreateContactData contactData)
+        public void EditContact(ContactData contactData)
         {
+            var editContact = Manager.Contacts.ContactList.Random();
+            var excepted = new Contacts(Manager.Contacts.ContactList);
             Manager
-                   .Contacts.PressEdit(Manager.Contacts.ContactList.Random())
+                   .Contacts.PressEdit(editContact)
                    .Contacts.AddContactFillFields(contactData)
                    .Contacts.PressUpdate();
 
-            Assert.IsTrue(ContactExistInList(contactData));
+            Assert.AreNotEqual(Manager.Contacts.ContactList, excepted);
         }
 
-        private bool ContactExistInList(CreateContactData contactData)
+        public void AddContactToGroup()
+        {
+            IfGroupsIsEmptyCreate();
+            IfContactsIsEmptyCreate();
+            var group = Manager.Groups.GetDataFromDB().ToList().Random();
+            var contact = Manager.Groups.GetDataFromDB().ToList().Random();
+            Manager.Contacts.OpenList().Contacts.SelectGroupFilter().Contacts.FindContactById(contact.Id.ToString()).Click();
+            Manager.Contacts.SelectGroupToAddContact(group.Name).Contacts.PressAddToGroup();
+            Assert.NotNull(
+                Manager.Contacts.GetLinksFromDB().Where(x => x.GroupId == group.Id && x.Id == contact.Id).FirstOrDefault()
+                );
+        }
+
+        private bool ContactExistInList(ContactData contactData)
         {
             var contacts = Manager.Contacts.ContactList;
             var mails = contactData.GetMails();
@@ -125,8 +143,8 @@ namespace AddressBookAutotests.Controllers
                     (x.FirstName == contactData.Firstname || contactData.Firstname == null) &&
                     (x.LastName == contactData.Lastname || contactData.Lastname == null) &&
                     (x.Address == contactData.Address || contactData.Address == null) &&
-                    x.Emails.OrderBy(y => y).SequenceEqual(mails) &&
-                    x.Phones.OrderBy(y => y).SequenceEqual(phones))
+                    x.Emails.SequenceEqual(mails) &&
+                    x.Phones.SequenceEqual(phones))
                     return true;
             return false;
         }
@@ -140,12 +158,17 @@ namespace AddressBookAutotests.Controllers
 
         public void EditContact()
         {
-            EditContact(CreateContactData.Random(false));
+            EditContact(ContactData.Random(false));
         }
 
         public void EditContactFIONotChange()
         { 
-            EditContact(CreateContactData.Random(true));
+            EditContact(ContactData.Random(true));
+        }
+
+        public void EditContactGroupSelect()
+        {
+            EditContact(ContactData.Random(true));
         }
 
         public void Details()
@@ -153,12 +176,12 @@ namespace AddressBookAutotests.Controllers
             var contact = IfContactsIsEmptyCreate().Random();
             var details = Manager.Contacts.GetDetailsText(contact);
             var contactDetails = Manager.Contacts.FromEditiorToDetails(contact);
-            Assert.AreEqual(contactDetails, details);
+            Assert.AreEqual(details, contactDetails);
         }
 
         public void RemoveContact(bool fromEditor)
         {
-            var contacts = IfContactsIsEmptyCreate();
+            var contacts = new Contacts(IfContactsIsEmptyCreate());
 
             var contact = contacts.Random();
             if (fromEditor)

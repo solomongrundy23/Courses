@@ -5,14 +5,14 @@ namespace AddressBookAutotests.DataSets
 {
     public static class DataProviderAutoGenerator
     {
-        public static IEnumerable<CreateGroupData> CreateGroupDatas()
+        public static IEnumerable<GroupData> CreateGroupDatas()
         {
-            for (int i = 0; i < 3; i++) yield return CreateGroupData.Random();
+            for (int i = 0; i < 3; i++) yield return GroupData.Random();
         }
 
-        public static IEnumerable<CreateContactData> CreateContactDatas()
+        public static IEnumerable<ContactData> CreateContactDatas()
         {
-            for (int i = 0; i < 3; i++) yield return CreateContactData.Random();
+            for (int i = 0; i < 3; i++) yield return ContactData.Random();
         }
     }
 }

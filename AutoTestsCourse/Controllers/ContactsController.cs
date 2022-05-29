@@ -10,17 +10,17 @@ namespace AddressBookAutotests.Controllers
 {
     public class ContactsController : BaseController
     {
-        public ContactList ContactList
+        public Contacts ContactList
         {
             get
             {
-                if (_contactList == null || _contactListChanged) 
-                    Manager.Navigate.Contacts().Contacts.GetList();
+                if (_contactList == null || _contactListChanged)
+                    _contactList = Manager.Navigate.Contacts().Contacts.GetListFromDB();
                 return _contactList;
             }
         }
 
-        private ContactList _contactList;
+        private Contacts _contactList;
         private bool _contactListChanged = false;
         private void ListChanged() => _contactListChanged = true;
 
@@ -31,7 +31,7 @@ namespace AddressBookAutotests.Controllers
 
         public ContactsController(ControllersManager manager) : base(manager) { }
 
-        public ControllersManager AddContactFillFields(CreateContactData contact)
+        public ControllersManager AddContactFillFields(ContactData contact)
         {
             FillTextBox("firstname", contact.Firstname);
             FillTextBox("middlename", contact.Middlename);
@@ -118,11 +118,62 @@ namespace AddressBookAutotests.Controllers
             return Manager;
         }
 
+        public List<GroupContactLink> GetLinksFromDB()
+        {
+            using (AddressBookDB db = new AddressBookDB())
+            {
+                var data = from c in db.groupContantLinks select c;
+                return data.ToList();
+            }
+        }
+
+        public List<ContactData> GetDataFromDB()
+        {
+            using (AddressBookDB db = new AddressBookDB())
+            {
+                var data = from c in db.contactDatas select c;
+                return data.Where(x => x.Deprecated == "0000-00-00 00:00:00").ToList();
+            }
+        }
+
+        public Contacts GetListFromDB()
+        {
+            using (AddressBookDB db = new AddressBookDB())
+            {
+                var contacts = GetDataFromDB().Select(x => new Contact(x)).ToContacts();
+                contacts.Sort();
+                return contacts;
+            }
+        }
+
+        public ControllersManager SelectGroupFilter(string groupName = "[all]")
+        {
+            SelectElementInComboBox("group", groupName);
+            return Manager;
+        }
+
+        public IWebElement FindContactById(string contactId)
+        {
+            return Driver.FindElement(By.Id(contactId));
+        }
+
+        public ControllersManager SelectGroupToAddContact(string groupName)
+        {
+            SelectElementInComboBox("to_group", groupName);
+            return Manager;
+        }
+
+        public ControllersManager PressAddToGroup()
+        {
+            Driver.FindElement(By.Name("Add"));
+            return Manager;
+        }
+
         public ReadOnlyCollection<IWebElement> GetList()
         {
             OpenList();
             var contactsRows = Driver.FindElements(By.Name("entry"));
-            var tempList = new ContactList();
+            var tempList = new Contacts();
             foreach (var contact in contactsRows)
             {
                 string lastName = GetContactLastname(contact);
@@ -166,12 +217,12 @@ namespace AddressBookAutotests.Controllers
 
         private List<string> GetEmails(IWebElement contactRow)
         { 
-            return contactRow.FindElements(By.XPath("td[5]/a")).Select(x => x.Text).ToList();
+            return contactRow.FindElements(By.XPath("td[5]/a")).Select(x => x.Text).Where(x => x != string.Empty).ToList();
         }
 
         private List<string> GetPhones(IWebElement contactRow)
         {
-            return contactRow.FindElement(By.XPath("td[6]")).Text.Split(new string[] { Environment.NewLine}, StringSplitOptions.None).ToList();
+            return contactRow.FindElement(By.XPath("td[6]")).Text.Split(new string[] { Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries).ToList();
         }
 
         public ControllersManager CheckeBoxClick(IWebElement contactRow)
@@ -216,14 +267,33 @@ namespace AddressBookAutotests.Controllers
             return Driver.FindElement(By.XPath("//*[@id='content']")).Text;
         }
 
-        private string CalcFullYears(string birthdate)
+        private string CalcFullYears(DateTime birthdate)
         {
-            return FullYears(DateTime.Parse(birthdate), DateTime.Now).ToString();
+            return $" ({FullYears(birthdate, DateTime.Now)})";
         }
 
-        private string CalcAnniversaryFullYears(string birthdate)
+        private string CalcFullYears(string birthdate)
         {
-            return (DateTime.Now.Year - DateTime.Parse(birthdate).Year).ToString();
+            var date = GetDateFromString(birthdate);
+            if (date == null) return string.Empty;
+            return CalcFullYears(date.Value);
+        }
+
+        private string CalcAnniversaryFullYears(DateTime birthdate)
+        {
+            return (DateTime.Now.Year - birthdate.Year).ToString();
+        }
+
+        private DateTime? GetDateFromString(string date)
+        {
+            if (DateTime.TryParse(date, out var dateObject))
+            {
+                return dateObject;
+            }
+            else
+            { 
+                return null;
+            }
         }
 
         private int FullYears(DateTime dt1, DateTime dt2)
@@ -265,11 +335,29 @@ namespace AddressBookAutotests.Controllers
             if (result.Count != 0) result.Add("");
 
 
-            var birthDate = Extensions.CombineParams(" ", GetTextBoxValue("bday") + ".", GetTextBoxValue("bmonth").FirstLetterToUpperCase(), GetTextBoxValue("byear"));
-            if (!string.IsNullOrEmpty(birthDate)) result.Add($"Birthday {birthDate} ({CalcFullYears(birthDate)})");
+            var bday = GetTextBoxValue("bday");
+            if (!string.IsNullOrEmpty(bday)) bday += ".";
+            var bmonth = GetTextBoxValue("bmonth").FirstLetterToUpperCase();
+            var byear = GetTextBoxValue("byear");
+            var birthDate = Extensions.CombineParams(" ", bday, bmonth, byear);
+            
+            if (!string.IsNullOrEmpty(birthDate))
+            {
+                var birthDateObject = GetDateFromString(birthDate);
+                result.Add($"Birthday {birthDate}{CalcFullYears(birthDate)}");
+            }
 
-            var anniversary = Extensions.CombineParams(" ", GetTextBoxValue("aday") + ".", GetTextBoxValue("amonth").FirstLetterToUpperCase(), GetTextBoxValue("ayear"));
-            if (!string.IsNullOrEmpty(anniversary)) result.Add($"Anniversary {anniversary} ({CalcAnniversaryFullYears(anniversary)})");
+            var aday = GetTextBoxValue("aday");
+            if (!string.IsNullOrEmpty(aday)) aday += ".";
+            var amonth = GetTextBoxValue("amonth").FirstLetterToUpperCase();
+            var ayear = GetTextBoxValue("ayear");
+            var anniversaryDate = Extensions.CombineParams(" ", aday, amonth, ayear);
+
+            if (!string.IsNullOrEmpty(anniversaryDate))
+            {
+                var anniversaryDateObject = GetDateFromString(anniversaryDate);
+                result.Add($"Anniversary {anniversaryDate}{CalcFullYears(anniversaryDate)}");
+            }
 
             if (result.Count != 0) result.Add("");
             if (TryGetDetail("address2", out string address2)) result.Add(address2);

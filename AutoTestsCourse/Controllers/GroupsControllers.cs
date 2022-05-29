@@ -4,6 +4,8 @@ using System.Linq;
 using System;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
+using AddressBookAutotests.Helpers;
+using NUnit.Framework;
 
 namespace AddressBookAutotests.Controllers
 {
@@ -14,7 +16,7 @@ namespace AddressBookAutotests.Controllers
         {
             get
             {
-                if (_groupList == null || _groupListChanded) Manager.Navigate.Groups().Groups.GetList();
+                if (_groupList == null || _groupListChanded) _groupList = GetListFromDB();
                 return _groupList;
             }
         }
@@ -28,9 +30,28 @@ namespace AddressBookAutotests.Controllers
             _groupList = null;
         }
 
+        public Groups GetListFromDB()
+        {
+            using (AddressBookDB db = new AddressBookDB())
+            {
+                var dbResult = from g in db.groupDatas select g;
+                Groups groups = dbResult.Select(x => new WebGroup(x.Name)).ToGroups();
+                return groups;
+            }
+        }
+
+        public List<GroupData> GetDataFromDB()
+        {
+            using (AddressBookDB db = new AddressBookDB())
+            {
+                var data = from g in db.groupDatas select g;
+                return data.Where(x => x.Deprecated == "0000-00-00 00:00:00").ToList();
+            }
+        }
+
         public GroupsControllers(ControllersManager manager) : base(manager) { }
 
-        public ControllersManager FillFields(CreateGroupData group)
+        public ControllersManager FillFields(GroupData group)
         {
             FillTextBox("group_name", group.Name);
             FillTextBox("group_header", group.Header);
@@ -65,12 +86,12 @@ namespace AddressBookAutotests.Controllers
             return groupElements;
         }
 
-        public IWebElement GetGroupElement(Group group)
+        public IWebElement GetGroupElement(WebGroup group)
         {
             return GetList().Where(x => x.Text == group.Name).FirstOrDefault() ?? throw new Exception("Group not found");
         }
 
-        public ControllersManager CheckBoxClick(Group group)
+        public ControllersManager CheckBoxClick(WebGroup group)
         {
             CheckBoxClick(GetGroupElement(group));
             return Manager;

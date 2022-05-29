@@ -5,24 +5,30 @@ using System.Collections.Generic;
 using System.Linq;
 using JsonHelper;
 using XMLHelper;
+using LinqToDB.Mapping;
 
 namespace AddressBookAutotests.Models
 {
-    public class Groups : List<Group>
+    public class Groups : List<WebGroup>
     {
-        public void Add(string name) => Add(new Group(name));
-        public override string ToString() => string.Join(Environment.NewLine, this);
-        public Group Random()
+        public List<WebGroup> GetList()
         {
-            if (Count == 0) throw new Exception("ReturnedGroups is Empty");
-            return this[new Random().Next(Count - 1)];
+            return new List<WebGroup>(this.AsEnumerable());
         }
-        public Group[] Find(string name) => this.Where(x => x.Name == name).ToArray();
-        public Group FindFirst(string name) => this.Where(x => x.Name == name).FirstOrDefault();
+
+        public Groups() { }
+
+        public Groups(IEnumerable<WebGroup> groups) => base.AddRange(groups);
+
+        public void Add(string name) => Add(new WebGroup(name));
+        public override string ToString() => string.Join(Environment.NewLine, this);
+        public WebGroup[] Find(string name) => this.Where(x => x.Name == name).ToArray();
+        public WebGroup FindFirst(string name) => this.Where(x => x.Name == name).FirstOrDefault();
     }
-    public class Group : IComparable<Group>
+
+    public class WebGroup : IComparable<WebGroup>
     {
-        public Group(string name)
+        public WebGroup(string name)
         { 
             Name = name;
         }
@@ -31,7 +37,7 @@ namespace AddressBookAutotests.Models
 
         public override string ToString() => $"{Name}";
 
-        public int CompareTo(Group other)
+        public int CompareTo(WebGroup other)
         {
             return string.Compare(Name, other.Name);
         }
@@ -39,9 +45,9 @@ namespace AddressBookAutotests.Models
         public override bool Equals(object obj)
         {
             if (obj == null) return false;
-            if (!(obj is Group)) return false;
+            if (!(obj is WebGroup)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            return ((Group)obj).Name == Name;
+            return ((WebGroup)obj).Name == Name;
         }
 
         public override int GetHashCode()
@@ -49,14 +55,24 @@ namespace AddressBookAutotests.Models
             return Name.GetHashCode();
         }
     }
-    public class CreateGroupData
-    {
-        public string Name { get; set; }
-        public string Header { get; set; }
-        public string Footer { get; set; }
 
-        public CreateGroupData() { }
-        public CreateGroupData(string groupName, string groupHeader, string groupFooter)
+
+    [Table(Name = "group_list")]
+    public class GroupData
+    {
+        [Column(Name = "group_name")]
+        public string Name { get; set; }
+        [Column(Name = "group_header")]
+        public string Header { get; set; }
+        [Column(Name = "group_footer")]
+        public string Footer { get; set; }
+        [Column(Name = "group_id"), PrimaryKey, Identity]
+        public long Id { get; set; }
+        [Column(Name = "deprecated")]
+        public string Deprecated;
+
+        public GroupData() { }
+        public GroupData(string groupName, string groupHeader, string groupFooter)
         {
             Name = groupName;
             Header = groupHeader;
@@ -65,10 +81,10 @@ namespace AddressBookAutotests.Models
 
         //public override string ToString() => this.ToJson();// пришлось убрать из за бага nunit, ждем обновления
 
-        public static CreateGroupData Random()
+        public static GroupData Random()
         {
             var faker = new Faker("ru");
-            return new CreateGroupData(faker.Random.Word(), faker.Random.Words(5), faker.Random.Words(10));
+            return new GroupData(faker.Random.Word(), faker.Random.Words(5), faker.Random.Words(10));
         }
     }
 }

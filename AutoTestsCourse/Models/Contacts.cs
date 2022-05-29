@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using JsonHelper;
 using AddressBookAutotests.Helpers;
 using System.Linq;
+using LinqToDB.Mapping;
 
 namespace AddressBookAutotests.Models
 {
@@ -30,6 +31,15 @@ namespace AddressBookAutotests.Models
             Address = address;
             Emails = email;
             Phones = phone;
+        }
+
+        public Contact(ContactData createData)
+        {
+            FirstName = createData.Firstname;
+            LastName = createData.Lastname;
+            Address = createData.Address;
+            Emails = createData.GetMails();
+            Phones = createData.GetPhones();
         }
 
         public override string ToString() => $"LastName: {LastName}\r\nFirstName: {FirstName}\r\n" +
@@ -63,15 +73,11 @@ namespace AddressBookAutotests.Models
             return HashCode.Combine(LastName, FirstName, Address);
         }
     }
-    public class ContactList : List<Contact>
+    public class Contacts : List<Contact>
     {
+        public Contacts(IEnumerable<Contact> contacts) => base.AddRange(contacts);
+        public Contacts() { }
         public bool isEmpty => this.Count == 0;
-
-        public Contact Random()
-        {
-            if (this.Count == 0) throw new Exception("ContactsTable is Empty");
-            return this[new Random().Next(this.Count - 1)];
-        }
 
         public override bool Equals(object obj)
         {
@@ -83,39 +89,69 @@ namespace AddressBookAutotests.Models
             throw new NotImplementedException();
         }
     }
-    public class CreateContactData
+
+    [Table(Name = "addressbook")]
+    public class ContactData
     {
+        [Column(Name = "id"), PrimaryKey, Identity]
+        public long Id;
+        [Column(Name = "aday")]
         public string Aday;
+        [Column(Name = "address")]
         public string Address;
+        [Column(Name = "address2")]
         public string Address2;
+        [Column(Name = "amonth")]
         public string Amonth;
+        [Column(Name = "ayear")]
         public string Ayear;
+        [Column(Name = "bday")]
         public string Bday;
+        [Column(Name = "bmonth")]
         public string Bmonth;
+        [Column(Name = "byear")]
         public string Byear;
+        [Column(Name = "company")]
         public string Company;
+        [Column(Name = "email")]
         public string Email;
+        [Column(Name = "email2")]
         public string Email2;
+        [Column(Name = "email3")]
         public string Email3;
+        [Column(Name = "fax")]
         public string Fax;
+        [Column(Name = "firstname")]
         public string Firstname;
+        [Column(Name = "home")]
         public string Home;
+        [Column(Name = "homepage")]
         public string Homepage;
+        [Column(Name = "lastname")]
         public string Lastname;
+        [Column(Name = "middlename")]
         public string Middlename;
+        [Column(Name = "mobile")]
         public string Mobile;
         public string New_group;
+        [Column(Name = "nickname")]
         public string Nickname;
+        [Column(Name = "notes")]
         public string Notes;
+        [Column(Name = "phone2")]
         public string Phone2;
-        public string Theform;
+        [Column(Name = "title")]
         public string Title;
+        [Column(Name = "work")]
         public string Work;
+        [Column(Name = "deprecated")]
+        public string Deprecated;
+
 
         //public override string ToString() => this.ToJson();
 
-        public CreateContactData() { }
-        public CreateContactData(
+        public ContactData() { }
+        public ContactData(
             string aday,
             string address,
             string address2,
@@ -139,7 +175,6 @@ namespace AddressBookAutotests.Models
             string nickname,
             string notes,
             string phone2,
-            string theform,
             string title,
             string work
             )
@@ -167,7 +202,6 @@ namespace AddressBookAutotests.Models
             Nickname = nickname;
             Notes = notes;
             Phone2 = phone2;
-            Theform = theform;
             Title = title;
             Work = work;
         }
@@ -178,10 +212,11 @@ namespace AddressBookAutotests.Models
             {
                 Home.DigitsOnly(),
                 Mobile.DigitsOnly(),
-                Phone2.DigitsOnly(),
-                Work.DigitsOnly()
+                Work.DigitsOnly(),
+                Phone2.DigitsOnly()
             };
             result.Remove(null);
+            result.Remove(String.Empty);
             return result;
         }
 
@@ -194,12 +229,13 @@ namespace AddressBookAutotests.Models
                 Email3
             };
             result.Remove(null);
+            result.Remove(String.Empty);
             return result;
         }
 
-        public static CreateContactData Random(bool fioIsNull = false)
+        public static ContactData Random(bool fioIsNull = false)
         {
-            CreateContactData result = new CreateContactData();
+            ContactData result = new ContactData();
             Faker fakerRu = new Faker("ru");
             Faker faker = new Faker();
             result.Aday = faker.Random.Int(1, 29).ToString();
@@ -228,7 +264,6 @@ namespace AddressBookAutotests.Models
             result.Nickname = fakerRu.Random.Word();
             result.Notes = fakerRu.Random.Words();
             result.Phone2 = fakerRu.Phone.PhoneNumber();
-            result.Theform = faker.Random.Word();
             result.Title = fakerRu.Random.Word();
             result.Work = fakerRu.Phone.PhoneNumber();
             return result;

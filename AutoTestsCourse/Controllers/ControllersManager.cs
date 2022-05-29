@@ -18,7 +18,7 @@ namespace AddressBookAutotests.Controllers
             return _managers.Value ?? throw new ArgumentNullException("Thread values == null");
         }
 
-        public ChromeDriver Driver { get; private set; }
+        public WebDriver Driver { get; private set; }
 
         private ControllersManager()
         {

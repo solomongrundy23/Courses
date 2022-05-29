@@ -5,14 +5,23 @@ using System.IO;
 using System.Linq;
 using JsonHelper;
 using XMLHelper;
+using System.Reflection;
 
 namespace AddressBookAutotests.Helpers
 {
     public class FileHelper
     {
+        public static string DataSetPath => GetDataSetPath();
+        private static string GetDataSetPath()
+        {
+            var folder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
+                .Replace("TestDataGenerator", "AutoTestsCourse");
+            return $"{folder}\\DataSetFiles\\";
+        }
+
         public enum FileFormat { Csv, Xml, Json}
 
-        public void Save(List<CreateGroupData> groups, string fileName, FileFormat format)
+        public void Save(List<GroupData> groups, string fileName, FileFormat format)
         {
             var writer = new StreamWriter(fileName);
             switch (format)
@@ -25,7 +34,7 @@ namespace AddressBookAutotests.Helpers
             writer.Close();
         }
 
-        public void Save(List<CreateContactData> contacts, string fileName, FileFormat format)
+        public void Save(List<ContactData> contacts, string fileName, FileFormat format)
         {
             var writer = new StreamWriter(fileName);
             switch (format)
@@ -38,35 +47,35 @@ namespace AddressBookAutotests.Helpers
             writer.Close();
         }
 
-        public List<CreateGroupData> LoadGroupsFromCSV(StreamReader reader)
+        public List<GroupData> LoadGroupsFromCSV(StreamReader reader)
         { 
-            var result = new List<CreateGroupData>();
+            var result = new List<GroupData>();
             while (!reader.EndOfStream)
             {
                 var row = reader.ReadLine().Split(';');
-                var obj = new CreateGroupData(row[0], row[1], row[2]);
+                var obj = new GroupData(row[0], row[1], row[2]);
                 result.Add(obj);
             }
             return result;
         }
 
-        public List<CreateGroupData> LoadGroupsFromXML(StreamReader reader)
+        public List<GroupData> LoadGroupsFromXML(StreamReader reader)
         {
-            return reader.ReadToEnd().FromXML<List<CreateGroupData>>();
+            return reader.ReadToEnd().FromXML<List<GroupData>>();
         }
 
-        public List<CreateGroupData> LoadGroupsFromJson(StreamReader reader)
+        public List<GroupData> LoadGroupsFromJson(StreamReader reader)
         {
-            return reader.ReadToEnd().FromJson<List<CreateGroupData>>();
+            return reader.ReadToEnd().FromJson<List<GroupData>>();
         }
 
-        public List<CreateContactData> LoadContactFromCSV(StreamReader reader)
+        public List<ContactData> LoadContactFromCSV(StreamReader reader)
         {
-            var result = new List<CreateContactData>();
+            var result = new List<ContactData>();
             while (!reader.EndOfStream)
             {
                 var row = reader.ReadLine().Split(';');
-                var obj = new CreateContactData();
+                var obj = new ContactData();
                 obj.Aday = row[0];
                 obj.Address = row[1];
                 obj.Address2 = row[2];
@@ -90,26 +99,25 @@ namespace AddressBookAutotests.Helpers
                 obj.Nickname = row[20];
                 obj.Notes = row[21];
                 obj.Phone2 = row[22];
-                obj.Theform = row[23];
-                obj.Title = row[24];
-                obj.Work = row[25];
+                obj.Title = row[23];
+                obj.Work = row[24];
                 result.Add(obj);
             }
             return result;
         }
 
-        public List<CreateContactData> LoadContactFromXML(StreamReader reader)
+        public List<ContactData> LoadContactFromXML(StreamReader reader)
         {
-            return reader.ReadToEnd().FromXML<List<CreateContactData>>();
+            return reader.ReadToEnd().FromXML<List<ContactData>>();
         }
 
-        public List<CreateContactData> LoadContactsFromJson(StreamReader reader)
+        public List<ContactData> LoadContactsFromJson(StreamReader reader)
         {
-            return reader.ReadToEnd().FromJson<List<CreateContactData>>();
+            return reader.ReadToEnd().FromJson<List<ContactData>>();
         }
 
 
-        public List<CreateGroupData> LoadGroups(string fileName, FileFormat format)
+        public List<GroupData> LoadGroups(string fileName, FileFormat format)
         {
             var writer = new StreamReader(fileName);
             switch (format)
@@ -121,7 +129,7 @@ namespace AddressBookAutotests.Helpers
             }
         }
 
-        public List<CreateContactData> LoadContacts(string fileName, FileFormat format)
+        public List<ContactData> LoadContacts(string fileName, FileFormat format)
         {
             var writer = new StreamReader(fileName);
             switch (format)
@@ -133,25 +141,25 @@ namespace AddressBookAutotests.Helpers
             }
         }
 
-        private void SaveToCSV(List<CreateGroupData> groups, StreamWriter stream)
+        private void SaveToCSV(List<GroupData> groups, StreamWriter stream)
         {
             var data = groups.Select(x => $"{x.Name};{x.Header};{x.Footer}").AsString();
             stream.Write(data);
         }
 
-        private void SaveToCSV(List<CreateContactData> contacts, StreamWriter stream)
+        private void SaveToCSV(List<ContactData> contacts, StreamWriter stream)
         { 
             stream.Write(contacts.Select(x => $"{x.Aday};{x.Address};{x.Address2};{x.Amonth};{x.Ayear};{x.Bday};{x.Bmonth};" +
             $"{x.Byear};{x.Company};{x.Email};{x.Email2};{x.Email3};{x.Fax};{x.Firstname};{x.Home};{x.Homepage};{x.Lastname};" +
-            $"{x.Middlename};{x.Mobile};{x.New_group};{x.Nickname};{x.Notes};{x.Phone2};{x.Theform};{x.Title};{x.Work}").AsString());
+            $"{x.Middlename};{x.Mobile};{x.New_group};{x.Nickname};{x.Notes};{x.Phone2};{x.Title};{x.Work}").AsString());
         }
 
-        private void SaveToXML(List<CreateGroupData> obj, StreamWriter stream)
+        private void SaveToXML(List<GroupData> obj, StreamWriter stream)
         {
             stream.Write(obj.ToXML());
         }
 
-        private void SaveToXML(List<CreateContactData> obj, StreamWriter stream)
+        private void SaveToXML(List<ContactData> obj, StreamWriter stream)
         {
             stream.Write(obj.ToXML());
         }

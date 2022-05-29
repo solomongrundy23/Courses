@@ -13,16 +13,38 @@ namespace TestDataGenerator
     {
         static void Main(string[] args)
         {
-            //Auto();
-            Generator(args);
+            args = new string[] { "auto" };
+            Console.WriteLine("Program is started");
+            if (args.Length == 0)
+            {
+                Console.WriteLine("Args is empty please enter params:");
+                Console.WriteLine("1) auto");
+                Console.Write("2) type=[contacts|groups|all] ");
+                Console.Write("format=[csv|xml|json] ");
+                Console.WriteLine("count=[0..2147483647]");
+            }
+            else
+            {
+                bool auto = false;
+                if (args.Length == 1)
+                    if (args[0].ToLower() == "auto")
+                        auto = true;
+                if (auto)
+                    AutoGenerator();
+                else
+                    Generator(args);
+            }
+            Console.WriteLine("Press any key to exit");
+            Console.ReadKey();
+            Console.WriteLine("Program is closed");
         }
 
-        static void Auto()
+        static void AutoGenerator()
         {
             string[] args;
-            args = "type=all format=csv count=3".Split(' '); Generator(args);
-            args = "type=all format=xml count=3".Split(' '); Generator(args);
-            args = "type=all format=json count=3".Split(' '); Generator(args);
+            args = "type=all format=csv count=5".Split(' '); Generator(args);
+            args = "type=all format=xml count=5".Split(' '); Generator(args);
+            args = "type=all format=json count=5".Split(' '); Generator(args);
         }
 
         static void Generator(string[] args)
@@ -32,14 +54,6 @@ namespace TestDataGenerator
                 IEnumerable<Param> paramList;
                 try
                 {
-                    Console.WriteLine("Program started");
-                    if (args.Length == 0)
-                    {
-                        Console.WriteLine("type=[contacts|groups|all]");
-                        Console.WriteLine("format=[csv|xml|json]");
-                        Console.WriteLine("count=[0..2147483647]");
-                        return;
-                    }
                     paramList = ParseParams(args).ToList();
                     Console.WriteLine("Params:");
                     Console.WriteLine(string.Join(Environment.NewLine, paramList));
@@ -74,7 +88,7 @@ namespace TestDataGenerator
 
         static string FileName(string type, string format)
         {
-            string path = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}\\DataSetFiles\\";
+            string path = FileHelper.DataSetPath; 
             if (!Directory.Exists(path)) Directory.CreateDirectory(path);
             return path + $"{type}.{format}";
         }
@@ -119,17 +133,17 @@ namespace TestDataGenerator
             }
         }
 
-        static List<CreateGroupData> GenerateGroups(int count)
+        static List<GroupData> GenerateGroups(int count)
         {
-            var groups = new List<CreateGroupData>();
-            for (int i = 0; i < count; i++) groups.Add(CreateGroupData.Random());
+            var groups = new List<GroupData>();
+            for (int i = 0; i < count; i++) groups.Add(GroupData.Random());
             return groups;
         }
 
-        static List<CreateContactData> GenerateContacts(int count)
+        static List<ContactData> GenerateContacts(int count)
         {
-            var contacts = new List<CreateContactData>();
-            for (int i = 0; i < count; i++) contacts.Add(CreateContactData.Random());
+            var contacts = new List<ContactData>();
+            for (int i = 0; i < count; i++) contacts.Add(ContactData.Random());
             return contacts;
         }
     }
