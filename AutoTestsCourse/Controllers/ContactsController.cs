@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AddressBookAutotests.Helpers;
 using System.Collections.ObjectModel;
+using NUnit.Framework;
 
 namespace AddressBookAutotests.Controllers
 {
@@ -123,7 +124,7 @@ namespace AddressBookAutotests.Controllers
             using (AddressBookDB db = new AddressBookDB())
             {
                 var data = from c in db.groupContantLinks select c;
-                return data.ToList();
+                return data.Where(x => x.Deprecated == "0000-00-00 00:00:00").ToList();
             }
         }
 
@@ -157,6 +158,12 @@ namespace AddressBookAutotests.Controllers
             return Driver.FindElement(By.Id(contactId));
         }
 
+        public ControllersManager FindContactByIdAndClick(string contactId)
+        {
+            FindContactById(contactId).Click();
+            return Manager;
+        }
+
         public ControllersManager SelectGroupToAddContact(string groupName)
         {
             SelectElementInComboBox("to_group", groupName);
@@ -165,7 +172,14 @@ namespace AddressBookAutotests.Controllers
 
         public ControllersManager PressAddToGroup()
         {
-            Driver.FindElement(By.Name("Add"));
+            Driver.FindElement(By.Name("add")).Click();
+            return Manager;
+        }
+
+        public ControllersManager AddedToGroupMessage(string groupNameAssert)
+        {
+            var msg = Driver.FindElement(By.ClassName("msgbox"));
+            Assert.IsTrue(msg.Text == $"Users added.\r\nGo to group page \"{groupNameAssert}\".");
             return Manager;
         }
 
@@ -237,7 +251,7 @@ namespace AddressBookAutotests.Controllers
             return Manager;
         }
 
-        public ControllersManager PressRemove()
+        public ControllersManager PressRemoveContact()
         {
             Driver.FindElement(By.XPath("//*[@id='content']/form[2]/div[2]/input")).Click();
             try
@@ -246,6 +260,19 @@ namespace AddressBookAutotests.Controllers
             }
             catch { }
             ListChanged();
+            return Manager;
+        }
+        public ControllersManager PressRemove()
+        {
+            Driver.FindElement(By.Name("remove")).Click();
+            ListChanged();
+            return Manager;
+        }
+
+        public ControllersManager ContactRemovedFromGroup(string groupName)
+        {
+            string msgText = Driver.FindElement(By.ClassName("msgbox")).Text;
+            Assert.AreEqual(msgText, $"Users removed.\r\nreturn to group page \"{groupName}\".");
             return Manager;
         }
 

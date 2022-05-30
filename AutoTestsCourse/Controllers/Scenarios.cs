@@ -123,11 +123,33 @@ namespace AddressBookAutotests.Controllers
             IfGroupsIsEmptyCreate();
             IfContactsIsEmptyCreate();
             var group = Manager.Groups.GetDataFromDB().ToList().Random();
-            var contact = Manager.Groups.GetDataFromDB().ToList().Random();
-            Manager.Contacts.OpenList().Contacts.SelectGroupFilter().Contacts.FindContactById(contact.Id.ToString()).Click();
-            Manager.Contacts.SelectGroupToAddContact(group.Name).Contacts.PressAddToGroup();
+            var contact = Manager.Contacts.GetDataFromDB().ToList().Random();
+            Manager.Contacts.OpenList()
+                        .Contacts.SelectGroupFilter()
+                        .Contacts.FindContactByIdAndClick(contact.Id.ToString())
+                        .Contacts.SelectGroupToAddContact(group.Name)
+                        .Contacts.PressAddToGroup()
+                        .Contacts.AddedToGroupMessage(group.Name);
+            var links = Manager.Contacts.GetLinksFromDB().ToList();
             Assert.NotNull(
-                Manager.Contacts.GetLinksFromDB().Where(x => x.GroupId == group.Id && x.Id == contact.Id).FirstOrDefault()
+                links.Where(x => x.GroupId == group.Id && x.ContactId == contact.Id).FirstOrDefault()
+                );
+        }
+
+        public void DeleteContactFromGroup()
+        {
+            AddContactToGroup();
+            var link = Manager.Contacts.GetLinksFromDB().ToList().Random();
+            var group = Manager.Groups.GetDataFromDB().Where(x => x.Id == link.GroupId).FirstOrDefault();
+            var contact = Manager.Contacts.GetDataFromDB().Where(x => x.Id == link.ContactId).FirstOrDefault();
+            Manager.Contacts.OpenList()
+                        .Contacts.SelectGroupFilter(group.Name)
+                        .Contacts.FindContactByIdAndClick(contact.Id.ToString())
+                        .Contacts.PressRemove()
+                        .Contacts.ContactRemovedFromGroup(group.Name);
+            var links = Manager.Contacts.GetLinksFromDB().ToList();
+            Assert.Null(
+                links.Where(x => x.GroupId == group.Id && x.ContactId == contact.Id).FirstOrDefault()
                 );
         }
 
@@ -193,7 +215,7 @@ namespace AddressBookAutotests.Controllers
             else
             {
                 Manager.Contacts.CheckeBoxContactClick(contact)
-                       .Contacts.PressRemove();
+                       .Contacts.PressRemoveContact();
             }
 
             contacts.RemoveAll(x => x.Equals(contact));

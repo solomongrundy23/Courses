@@ -84,7 +84,7 @@ namespace AddressBookAutotests.Models
         public static GroupData Random()
         {
             var faker = new Faker("ru");
-            return new GroupData(faker.Random.Word(), faker.Random.Words(5), faker.Random.Words(10));
+            return new GroupData(faker.Random.Words(10).Replace(' ', '_'), faker.Random.Words(5), faker.Random.Words(10));
         }
     }
 }

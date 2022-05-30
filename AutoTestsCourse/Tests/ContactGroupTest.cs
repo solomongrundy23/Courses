@@ -12,10 +12,18 @@ namespace AddressBookAutotests.Tests
     {
         [Test]
         [Order(1)]
-        [Description("Contact to Group")]
+        [Description("Select Contact to Group")]
         public void ContactToGroup()
         {
             Manager.Scenarios.AddContactToGroup();
+        }
+
+        [Test]
+        [Order(1)]
+        [Description("Unselect Contact From Group")]
+        public void ContactFromGroup()
+        {
+            Manager.Scenarios.DeleteContactFromGroup();
         }
     }
 }
