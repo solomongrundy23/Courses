@@ -35,7 +35,7 @@ namespace AddressBookAutotests.Dev
             var groups = (Contacts)func.Invoke();
             var stop = DateTime.Now;
             var remains = stop.Subtract(start).TotalMilliseconds;
-            Console.WriteLine(remains);
+            Console.Out.WriteLine($"{remains} ms");
             return groups;
         }
     }

@@ -8,8 +8,8 @@ namespace AddressBookAutotests.DataSets
 {
     public static class DataProviderFromFile
     {
-        private static readonly string _groupPath = _groupPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\DataSetFiles\\groups.";
-        private static readonly string _contactsPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\DataSetFiles\\contacts.";
+        private static readonly string _groupPath = _groupPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\DataSetsFiles\\groups.";
+        private static readonly string _contactsPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\DataSetsFiles\\contacts.";
 
         public static IEnumerable<GroupData> CreateGroupDatasFromCSV()
         {

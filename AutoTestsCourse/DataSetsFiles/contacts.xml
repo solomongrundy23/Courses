@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-16"?>
+<ArrayOfContactData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <ContactData>
+    <Id>0</Id>
+    <Aday>29</Aday>
+    <Address>улица Красноармейская, 222, Тюмень, Финляндия</Address>
+    <Address2>улица Партизанская, 737, Сочи, Бруней</Address2>
+    <Amonth>February</Amonth>
+    <Ayear>2011</Ayear>
+    <Bday>7</Bday>
+    <Bmonth>April</Bmonth>
+    <Byear>1988</Byear>
+    <Company>Мясникова - Горшкова</Company>
+    <Email>Ubaldo42@gmail.com</Email>
+    <Email2>Mona17@gmail.com</Email2>
+    <Email3>Daron_Leannon@yahoo.com</Email3>
+    <Fax>(940)653-49-73</Fax>
+    <Firstname>Анжелика</Firstname>
+    <Home>(911)485-38-44</Home>
+    <Homepage>http://dejuan.info</Homepage>
+    <Lastname>Кудряшова</Lastname>
+    <Middlename>Игоревна</Middlename>
+    <Mobile>(998)483-74-49</Mobile>
+    <Nickname>Glens</Nickname>
+    <Notes>Handcrafted Frozen Ball</Notes>
+    <Phone2>(910)643-62-31</Phone2>
+    <Title>Industrial &amp; Industrial</Title>
+    <Work>(910)451-24-84</Work>
+  </ContactData>
+  <ContactData>
+    <Id>0</Id>
+    <Aday>20</Aday>
+    <Address>Весенняя ул., 273, Томск, Алжир</Address>
+    <Address2>Строительная пр., 242, Ставрополь, Мавритания</Address2>
+    <Amonth>January</Amonth>
+    <Ayear>1981</Ayear>
+    <Bday>4</Bday>
+    <Bmonth>January</Bmonth>
+    <Byear>1987</Byear>
+    <Company>Лебедева Торг</Company>
+    <Email>Margaret.White@gmail.com</Email>
+    <Email2>Chase.McDermott19@hotmail.com</Email2>
+    <Email3>Elsie.Turner99@hotmail.com</Email3>
+    <Fax>(999)966-74-82</Fax>
+    <Firstname>Алевтина</Firstname>
+    <Home>(975)559-37-60</Home>
+    <Homepage>http://bo.info</Homepage>
+    <Lastname>Бобылева</Lastname>
+    <Middlename>Геннадьевна</Middlename>
+    <Mobile>(975)772-07-28</Mobile>
+    <Nickname>Kids &amp; Industrial</Nickname>
+    <Notes>Investor</Notes>
+    <Phone2>(918)376-09-11</Phone2>
+    <Title>Representative</Title>
+    <Work>(959)022-99-15</Work>
+  </ContactData>
+  <ContactData>
+    <Id>0</Id>
+    <Aday>21</Aday>
+    <Address>Железнодорожная площадь, 916, Казань, Мали</Address>
+    <Address2>Набережная ул., 057, Екатеринбург, Андорра</Address2>
+    <Amonth>October</Amonth>
+    <Ayear>1953</Ayear>
+    <Bday>9</Bday>
+    <Bmonth>January</Bmonth>
+    <Byear>1937</Byear>
+    <Company>Матвеева - Быкова</Company>
+    <Email>Javier.Bosco@hotmail.com</Email>
+    <Email2>Anissa.Aufderhar18@hotmail.com</Email2>
+    <Email3>Eden98@hotmail.com</Email3>
+    <Fax>(958)448-66-08</Fax>
+    <Firstname>Анастасия</Firstname>
+    <Home>(986)895-20-13</Home>
+    <Homepage>https://hulda.biz</Homepage>
+    <Lastname>Горбунова</Lastname>
+    <Middlename>Максимовна</Middlename>
+    <Mobile>(968)018-93-12</Mobile>
+    <Nickname>vortals</Nickname>
+    <Notes>Tools, Beauty &amp; Toys</Notes>
+    <Phone2>(913)156-52-37</Phone2>
+    <Title>Computers, Shoes &amp; Books</Title>
+    <Work>(929)897-58-36</Work>
+  </ContactData>
+  <ContactData>
+    <Id>0</Id>
+    <Aday>21</Aday>
+    <Address>Школьная ул., 587, Уфа, Казахстан</Address>
+    <Address2>улица Подгорная, 423, Сочи, Перу</Address2>
+    <Amonth>June</Amonth>
+    <Ayear>1945</Ayear>
+    <Bday>24</Bday>
+    <Bmonth>November</Bmonth>
+    <Byear>1968</Byear>
+    <Company>Селиверстова - Лебедев</Company>
+    <Email>Romaine.Marquardt21@yahoo.com</Email>
+    <Email2>Heloise.VonRueden@gmail.com</Email2>
+    <Email3>Era_Pollich49@hotmail.com</Email3>
+    <Fax>(906)037-43-63</Fax>
+    <Firstname>Алина</Firstname>
+    <Home>(903)859-30-26</Home>
+    <Homepage>https://obie.biz</Homepage>
+    <Lastname>Князева</Lastname>
+    <Middlename>Георгьевна</Middlename>
+    <Mobile>(946)010-90-08</Mobile>
+    <Nickname>Zambian Kwacha</Nickname>
+    <Notes>Wooden</Notes>
+    <Phone2>(958)535-65-89</Phone2>
+    <Title>Credit Card Account</Title>
+    <Work>(970)751-92-97</Work>
+  </ContactData>
+  <ContactData>
+    <Id>0</Id>
+    <Aday>19</Aday>
+    <Address>Зеленая улица, 723, Нижний Новгород, Ливан</Address>
+    <Address2>проспект Дружбы, 889, Санкт-Петербург, Ливия</Address2>
+    <Amonth>May</Amonth>
+    <Ayear>2006</Ayear>
+    <Bday>10</Bday>
+    <Bmonth>January</Bmonth>
+    <Byear>1912</Byear>
+    <Company>Федорова Сбыт</Company>
+    <Email>Madie_Tillman27@gmail.com</Email>
+    <Email2>Presley_Swift@gmail.com</Email2>
+    <Email3>Josefa76@yahoo.com</Email3>
+    <Fax>(906)140-85-72</Fax>
+    <Firstname>Антонина</Firstname>
+    <Home>(998)604-82-27</Home>
+    <Homepage>http://mark.name</Homepage>
+    <Lastname>Галкина</Lastname>
+    <Middlename>Александровна</Middlename>
+    <Mobile>(923)882-02-61</Mobile>
+    <Nickname>cyan</Nickname>
+    <Notes>Soft workforce</Notes>
+    <Phone2>(903)924-17-22</Phone2>
+    <Title>Junction</Title>
+    <Work>(944)640-61-84</Work>
+  </ContactData>
+</ArrayOfContactData>

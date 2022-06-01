@@ -14,9 +14,10 @@ namespace AddressBookAutotests.Helpers
         public static string DataSetPath => GetDataSetPath();
         private static string GetDataSetPath()
         {
-            var folder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
-                .Replace("TestDataGenerator", "AutoTestsCourse");
-            return $"{folder}\\DataSetFiles\\";
+            var folders = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location).Split('\\').ToList();
+            for (int i = 0; i < 3; i++) folders.RemoveAt(folders.Count() - 1);
+            var folder = string.Join("\\", folders);
+            return $"{folder}\\AutoTestsCourse\\DataSetsFiles\\";
         }
 
         public enum FileFormat { Csv, Xml, Json}
