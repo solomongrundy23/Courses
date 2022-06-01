@@ -11,7 +11,7 @@ namespace AddressBookAutotests.Helpers
     {
         public static string CombineParams(string splitter, params string[] paramList)
         {
-            return string.Join(splitter, paramList.Select(x => x ?? string.Empty));
+            return string.Join(splitter, paramList.Select(x => x ?? string.Empty).Where(x => x != string.Empty));
         }
 
         public static T Random<T>(this List<T> list)
@@ -19,6 +19,8 @@ namespace AddressBookAutotests.Helpers
             if (list.Count == 0) throw new Exception("List is Empty");
             return list[new Random().Next(list.Count - 1)];
         }
+
+        public static string ToText(this List<string> list) => string.Join(Environment.NewLine, list);
 
         public static string DigitsOnly(this string text)
         {

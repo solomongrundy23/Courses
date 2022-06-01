@@ -208,29 +208,25 @@ namespace AddressBookAutotests.Models
 
         public List<string> GetPhones()
         {
-            var result = new List<string>
+            var result = new string[]
             {
                 Home.DigitsOnly(),
                 Mobile.DigitsOnly(),
                 Work.DigitsOnly(),
                 Phone2.DigitsOnly()
             };
-            result.Remove(null);
-            result.Remove(String.Empty);
-            return result;
+            return result.Where(x => x != "").ToList();
         }
 
         public List<string> GetMails()
         {
-            var result = new List<string>
+            var result = new string[]
             {
                 Email,
                 Email2,
                 Email3
             };
-            result.Remove(null);
-            result.Remove(String.Empty);
-            return result;
+            return result.Where(x => x != "").ToList();
         }
 
         public static ContactData Random(bool fioIsNull = false)

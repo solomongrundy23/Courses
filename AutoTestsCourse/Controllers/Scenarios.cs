@@ -118,6 +118,13 @@ namespace AddressBookAutotests.Controllers
             Assert.AreNotEqual(Manager.Contacts.ContactList, excepted);
         }
 
+        private GroupContactLink GetLink(string groupName, long contactId)
+        {
+            var links = Manager.Contacts.GetLinksFromDB().ToList();
+            var groupsIds = Manager.Groups.GetDataFromDB().Where(x => x.Name == groupName).Select(x => x.Id).ToList();
+            return Manager.Contacts.GetLinksFromDB().Where(x => groupsIds.Contains(x.GroupId) && x.ContactId == contactId).FirstOrDefault();
+        }
+
         public void AddContactToGroup()
         {
             IfGroupsIsEmptyCreate();
@@ -130,10 +137,7 @@ namespace AddressBookAutotests.Controllers
                         .Contacts.SelectGroupToAddContact(group.Name)
                         .Contacts.PressAddToGroup()
                         .Contacts.AddedToGroupMessage(group.Name);
-            var links = Manager.Contacts.GetLinksFromDB().ToList();
-            Assert.NotNull(
-                links.Where(x => x.GroupId == group.Id && x.ContactId == contact.Id).FirstOrDefault()
-                );
+            Assert.IsNotNull(GetLink(group.Name, contact.Id));
         }
 
         public void DeleteContactFromGroup()
@@ -147,35 +151,14 @@ namespace AddressBookAutotests.Controllers
                         .Contacts.FindContactByIdAndClick(contact.Id.ToString())
                         .Contacts.PressRemove()
                         .Contacts.ContactRemovedFromGroup(group.Name);
-            var links = Manager.Contacts.GetLinksFromDB().ToList();
-            Assert.Null(
-                links.Where(x => x.GroupId == group.Id && x.ContactId == contact.Id).FirstOrDefault()
-                );
-        }
-
-        private bool ContactExistInList(ContactData contactData)
-        {
-            var contacts = Manager.Contacts.ContactList;
-            var mails = contactData.GetMails();
-            mails.Sort();
-            var phones = contactData.GetPhones();
-            phones.Sort();
-            foreach (var x in contacts) 
-                if (
-                    (x.FirstName == contactData.Firstname || contactData.Firstname == null) &&
-                    (x.LastName == contactData.Lastname || contactData.Lastname == null) &&
-                    (x.Address == contactData.Address || contactData.Address == null) &&
-                    x.Emails.SequenceEqual(mails) &&
-                    x.Phones.SequenceEqual(phones))
-                    return true;
-            return false;
+            Assert.IsNull(GetLink(group.Name, contact.Id));
         }
 
         public void VerifyContactTableAndEdition()
         {
-            var contactTable = IfContactsIsEmptyCreate().Random();
-            var contactEdition = Manager.Contacts.GetContactFromEditor(contactTable);
-            Assert.AreEqual(contactEdition, contactTable);
+            var contact = IfContactsIsEmptyCreate().Random();
+            var contactEdition = Manager.Contacts.GetContactFromEditor(contact);
+            Assert.AreEqual(contactEdition, contact);
         }
 
         public void EditContact()

@@ -6,6 +6,7 @@ using System.Linq;
 using AddressBookAutotests.Helpers;
 using System.Collections.ObjectModel;
 using NUnit.Framework;
+using System.Text;
 
 namespace AddressBookAutotests.Controllers
 {
@@ -342,57 +343,62 @@ namespace AddressBookAutotests.Controllers
         public string FromEditiorToDetails(Contact contact)
         {
             PressEdit(contact);
-            var result = new List<string>();
+            var mainInfo = new List<string>();
             var fio = Extensions.CombineParams(" ", GetTextBoxValue("firstname"), GetTextBoxValue("middlename"), GetTextBoxValue("lastname"));
-            if (!string.IsNullOrEmpty(fio)) result.Add(fio);
-            if (TryGetDetail("nickname", out string nickname)) result.Add(nickname);
-            if (TryGetDetail("title", out string title)) result.Add(title);
-            if (TryGetDetail("company", out string company)) result.Add(company);
-            if (TryGetDetail("address", out string address)) result.Add(address);
-            if (result.Count != 0) result.Add("");
-            if (TryGetDetail("home", out string home)) result.Add("H: " + home);
-            if (TryGetDetail("mobile", out string mobile)) result.Add("M: " + mobile);
-            if (TryGetDetail("work", out string work)) result.Add("W: " + work);
-            if (TryGetDetail("fax", out string fax)) result.Add("F: " + fax);
-            if (result.Count != 0) result.Add("");
-            if (TryGetDetail("email", out string email)) result.Add(email);
-            if (TryGetDetail("email2", out string email2)) result.Add(email2);
-            if (TryGetDetail("email3", out string email3)) result.Add(email3);
-            if (TryGetDetail("homepage", out string homepage)) result.Add("Homepage:" + homepage.Replace("https://", "\r\n").Replace("http://", "\r\n"));
-            if (result.Count != 0) result.Add("");
+            if (!string.IsNullOrEmpty(fio)) mainInfo.Add(fio);
+            if (TryGetDetail("nickname", out string nickname)) mainInfo.Add(nickname);
+            if (TryGetDetail("title", out string title)) mainInfo.Add(title);
+            if (TryGetDetail("company", out string company)) mainInfo.Add(company);
+            if (TryGetDetail("address", out string address)) mainInfo.Add(address);
 
+            var phonesInfo = new List<string>();
+            if (TryGetDetail("home", out string home)) phonesInfo.Add("H: " + home);
+            if (TryGetDetail("mobile", out string mobile)) phonesInfo.Add("M: " + mobile);
+            if (TryGetDetail("work", out string work)) phonesInfo.Add("W: " + work);
+            if (TryGetDetail("fax", out string fax)) phonesInfo.Add("F: " + fax);
 
+            var emailsInfo = new List<string>();
+            if (TryGetDetail("email", out string email)) emailsInfo.Add(email);
+            if (TryGetDetail("email2", out string email2)) emailsInfo.Add(email2);
+            if (TryGetDetail("email3", out string email3)) emailsInfo.Add(email3);
+            if (TryGetDetail("homepage", out string homepage)) emailsInfo.Add("Homepage:" + homepage.Replace("https://", "\r\n").Replace("http://", "\r\n"));
+
+            var datesInfo = new List<string>();
             var bday = GetTextBoxValue("bday");
-            if (!string.IsNullOrEmpty(bday)) bday += ".";
+            if (bday == "" || bday == "0") bday = ""; else bday += ".";
             var bmonth = GetTextBoxValue("bmonth").FirstLetterToUpperCase();
             var byear = GetTextBoxValue("byear");
+            if (bmonth == "" || bmonth == "-") bmonth = "";
             var birthDate = Extensions.CombineParams(" ", bday, bmonth, byear);
-            
             if (!string.IsNullOrEmpty(birthDate))
             {
                 var birthDateObject = GetDateFromString(birthDate);
-                result.Add($"Birthday {birthDate}{CalcFullYears(birthDate)}");
+                datesInfo.Add($"Birthday {birthDate}{CalcFullYears(birthDate)}");
             }
-
             var aday = GetTextBoxValue("aday");
-            if (!string.IsNullOrEmpty(aday)) aday += ".";
+            if (string.IsNullOrEmpty(aday) || aday == "0") aday = ""; else aday += ".";
             var amonth = GetTextBoxValue("amonth").FirstLetterToUpperCase();
+            if (amonth == "" || amonth == "-") amonth = "";
             var ayear = GetTextBoxValue("ayear");
             var anniversaryDate = Extensions.CombineParams(" ", aday, amonth, ayear);
-
             if (!string.IsNullOrEmpty(anniversaryDate))
             {
                 var anniversaryDateObject = GetDateFromString(anniversaryDate);
-                result.Add($"Anniversary {anniversaryDate}{CalcFullYears(anniversaryDate)}");
+                datesInfo.Add($"Anniversary {anniversaryDate}{CalcFullYears(anniversaryDate)}");
             }
 
-            if (result.Count != 0) result.Add("");
-            if (TryGetDetail("address2", out string address2)) result.Add(address2);
-            if (result.Count != 0) result.Add("");
-            if (TryGetDetail("phone2", out string phone2)) result.Add("P: " + phone2);
-            if (result.Count != 0) result.Add("");
-            if (TryGetDetail("notes", out string notes)) result.Add(notes);
-            return string.Join(Environment.NewLine, result);
+            TryGetDetail("address2", out string address2);
+            TryGetDetail("phone2", out string phone2);
+            TryGetDetail("notes", out string notes);
+            var result = new List<string>();
+            if (mainInfo.Count > 0) result.Add(mainInfo.ToText());
+            if (phonesInfo.Count > 0) { if (result.Count > 0) result.Add(""); result.Add(phonesInfo.ToText()); }
+            if (emailsInfo.Count > 0) { if (result.Count > 0) result.Add(""); result.Add(emailsInfo.ToText()); }
+            if (datesInfo.Count > 0) { if (result.Count > 0) result.Add(""); result.Add(datesInfo.ToText()); }
+            if (!string.IsNullOrEmpty(address2)) { if (result.Count > 0) result.Add(""); result.Add(address2); }
+            if (!string.IsNullOrEmpty(phone2)) { if (result.Count > 0) result.Add(""); result.Add($"P: {phone2}"); }
+            if (!string.IsNullOrEmpty(notes)) { if (result.Count > 0) result.Add(""); result.Add(notes); }
+            return result.ToText();
         }
 
         public ControllersManager PressDeleteFromEdtior()
